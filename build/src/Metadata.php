@@ -609,6 +609,8 @@ class Metadata implements Stringable, JsonSerializable, IteratorAggregate {
             [
                 'version', 'name', 'description', 'author',
                 'namespace', 'homepage', 'homepageURL', 'website', 'source',
+            ],
+            [
                 'icon', 'iconURL', 'defaulticon', 'icon64', 'icon64URL',
             ],
             [
