@@ -24,7 +24,9 @@ foreach (scandir($root) as $file) {
     $meta = Metadata::loadMetadata("$root/$file");
 
     if (!$meta->getDefaulticon()) {
-        $meta->setDefaulticon($meta->getIcon(), true);
+
+        $i = new NGSOFT\Userscript\Icon($meta->getIcon(), true);
+        $meta->setDefaulticon($i->getBase64URL());
     }
 
     $today = sprintf('%s.%s.', (string) intval(gmdate('y')), gmdate('m'));
@@ -33,8 +35,11 @@ foreach (scandir($root) as $file) {
 
     if (str_starts_with($version, $today)) {
         $split = explode(".", $version);
-        $rev = intval($version[2]) + 1;
+        $rev = intval($version[2]);
+        $rev++;
     }
+    var_dump($rev);
+
     $meta->setVersion($today . $rev);
 
     file_put_contents("$root/$file", json_encode($meta, JSON_PRETTY_PRINT));

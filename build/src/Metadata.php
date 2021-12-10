@@ -615,6 +615,8 @@ class Metadata implements Stringable, JsonSerializable, IteratorAggregate {
             ],
             [
                 'nocompat', 'run-at', 'noframes', 'grant',
+            ],
+            [
                 'resource', 'require',
             ],
             [
