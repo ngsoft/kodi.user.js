@@ -10,6 +10,7 @@ use GuzzleHttp\{
 use JsonSerializable,
     Mimey\MimeTypes,
     NGSOFT\RegExp,
+    RuntimeException,
     Stringable,
     Throwable;
 
@@ -29,9 +30,14 @@ class Icon implements Stringable, JsonSerializable {
     /** @var HttpFactory */
     private $httpFactory;
 
-    public function __construct(string $url, bool $convert = false) {
+    public function __construct($url, bool $convert = false) {
         $this->httpFactory = new HttpFactory();
-        $this->url = $url;
+        if (is_string($url)) $this->url = $url;
+        elseif (is_array($url)) {
+            foreach ($url as $prop => $val) {
+                $this->{$prop} = $val;
+            }
+        } else throw new RuntimeException('Invalid URL.');
         $this->convert = $convert;
     }
 

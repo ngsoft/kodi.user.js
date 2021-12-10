@@ -33,7 +33,7 @@ foreach (scandir($root) as $file) {
 
     if (str_starts_with($version, $today)) {
         $split = explode(".", $version);
-        $rev = $version[2] + 1;
+        $rev = intval($version[2]) + 1;
     }
     $meta->setVersion($today . $rev);
 
