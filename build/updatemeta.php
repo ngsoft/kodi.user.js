@@ -4,7 +4,13 @@ declare(strict_types=1);
 
 use NGSOFT\Userscript\Metadata;
 
+if (php_sapi_name() != 'cli') {
+    die('Cannot be run in browser.' . PHP_EOL);
+}
+
+
 require_once __DIR__ . '/vendor/autoload.php';
+
 $src = dirname(__DIR__) . '/src';
 
 $convert_icons = true;

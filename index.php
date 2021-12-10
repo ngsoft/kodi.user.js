@@ -13,12 +13,18 @@ require_once __DIR__ . '/build/vendor/autoload.php';
  */
 $root = __DIR__;
 
-$entrypoint = '/src/kodi.user.js';
 $sources = [
     "$root/src",
 ];
 
+$metadata = 'kodi.json';
+$entrypoint = 'kodi.user.js';
+
 $origin = sprintf('%s://%s:%s', $_SERVER['REQUEST_SCHEME'], $_SERVER['SERVER_NAME'], $_SERVER['SERVER_PORT']);
+
+define('RELEASE_MAJOR', (string) intval(gmdate('y')));
+define('RELEASE_MINOR', gmdate('m'));
+define('RELEASE_REVISION', (string) $rev);
 
 var_dump($origin);
 
