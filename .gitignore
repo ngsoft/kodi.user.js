@@ -1,0 +1,6 @@
+.*
+!.gitignore
+!.ht*
+!composer.json
+*.lock
+/nbproject/*/
