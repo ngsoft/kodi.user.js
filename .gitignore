@@ -3,6 +3,7 @@
 !.ht*
 !composer.json
 *.lock
+/vendor/
 /nbproject/*/
 
 
