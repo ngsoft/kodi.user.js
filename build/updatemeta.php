@@ -11,13 +11,14 @@ if (php_sapi_name() != 'cli') {
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-$src = dirname(__DIR__) . '/src';
+$src = dirname(__DIR__);
 
 $convert_icons = true;
 
 $cnt = 0;
 
 foreach (scandir($src)as $file) {
+
     if (str_contains($file, '.dev')) continue;
     if (!str_ends_with($file, '.user.js')) continue;
     $filename = "$src/$file";

@@ -12,9 +12,10 @@ require_once __DIR__ . '/build/vendor/autoload.php';
  * Dev Server Proxy Script
  */
 $root = __DIR__;
+$rev = 0;
 
 $sources = [
-    "$root/src",
+    "src/",
 ];
 
 $metadata = 'kodi.json';
@@ -26,7 +27,9 @@ define('RELEASE_MAJOR', (string) intval(gmdate('y')));
 define('RELEASE_MINOR', gmdate('m'));
 define('RELEASE_REVISION', (string) $rev);
 
-var_dump($origin);
+define('RELEASE', sprintf('%s.%s.%s', RELEASE_MAJOR, RELEASE_MINOR, RELEASE_REVISION));
+
+var_dump(RELEASE, $origin);
 
 echo "<pre>\n";
 var_dump($_SERVER);

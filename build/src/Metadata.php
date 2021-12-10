@@ -202,8 +202,8 @@ class Metadata implements Stringable, JsonSerializable, IteratorAggregate {
      */
     public static function loadMetadata(string $jsonmeta) {
         if (!is_file($jsonmeta)) throw new RuntimeException(sprintf('%s does not exists.', $jsonmeta));
-        if (!str_ends_with($jsonmeta, '.json')) throw new RuntimeException(sprintf('%s: invalid extension(.json).', $jsonmeta));
-        $userscript = preg_replace('/\.json$/', '.user.js', $jsonmeta);
+        if (!str_ends_with($jsonmeta, '.meta.json')) throw new RuntimeException(sprintf('%s: invalid extension(.meta.json).', $jsonmeta));
+        $userscript = preg_replace('/\.meta\.json$/', '.user.js', $jsonmeta);
         $instance = static::create();
         $instance->setFilenames($userscript);
         $instance->loadMeta(json_decode(file_get_contents($jsonmeta), true));
@@ -217,7 +217,7 @@ class Metadata implements Stringable, JsonSerializable, IteratorAggregate {
     private function setFilenames(string $userscript) {
         $this->userscript = $userscript;
         $this->metascript = preg_replace('/\.user\.js$/', '.meta.js', $userscript);
-        $this->jsonmeta = preg_replace('/\.user\.js$/', '.json', $userscript);
+        $this->jsonmeta = preg_replace('/\.user\.js$/', '.meta.json', $userscript);
     }
 
     ////////////////////////////   Save Metadata   ////////////////////////////
@@ -773,6 +773,9 @@ class Metadata implements Stringable, JsonSerializable, IteratorAggregate {
         foreach ($meta as $prop => $value) {
             $this->addProperty($prop);
             if ($key = $this->getKey($prop)) {
+
+                if (str_contains($prop, 'icon')) $value = new Icon($value);
+
                 $this->{$key} = $value;
                 continue;
             }
