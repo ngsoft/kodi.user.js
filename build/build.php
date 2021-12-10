@@ -35,16 +35,28 @@ foreach (scandir($root) as $file) {
 
     if (str_starts_with($version, $today)) {
         $split = explode(".", $version);
-        $rev = intval($version[2]);
-        $rev++;
+        $rev = intval($split[2]) + 1;
     }
-    var_dump($rev);
-
     $meta->setVersion($today . $rev);
-
     file_put_contents("$root/$file", json_encode($meta, JSON_PRETTY_PRINT));
 
-    var_dump($meta, (string) $meta);
+    list($script, $metafile) = [preg_replace('#\.meta\.json#', '.user.js', $file), preg_replace('#\.meta\.json#', '.meta.js', $file)];
+    $dest = "$root/$script";
+    $found = false;
+    foreach ($sources as $dir) {
+        $path = "$root/$dir/$script";
+        if (is_file($path)) {
+            $found = true;
+            printf("Loading %s\n", $path);
+            $contents = file_get_contents($path);
+
+            $contents = (string) $meta . $contents;
+            printf("Saving %s, %s", $script, $metafile);
+            file_put_contents($dest, $contents);
+            $meta->saveMetaFile();
+        }
+    }
+    if (!$found) throw new RuntimeException('Cannot find script ' . $script);
 }
 
 
