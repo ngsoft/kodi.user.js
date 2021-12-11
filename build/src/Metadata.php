@@ -585,6 +585,12 @@ class Metadata implements Stringable, JsonSerializable, IteratorAggregate {
         return $this;
     }
 
+    public function removeCustom(string $name) {
+        unset($this->properties[$name]);
+        unset($this->custom[$name]);
+        return $this;
+    }
+
     ////////////////////////////   Parser/Builder   ////////////////////////////
 
 

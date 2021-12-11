@@ -90,10 +90,12 @@ if (isset($pathinfo) && $method == 'GET') {
 
         $meta = Metadata::loadMetadata("$root/$metadata");
         $meta->setVersion(sprintf('%s.%s.dev', (string) intval(gmdate('y')), gmdate('m')));
-        if ($basepath = $meta->getCustom('basepath')) {
-            $basepath .= $meta->getVersion();
-            $meta->setCustom('basepath', $basepath);
+        $meta->removeCustom('basepath');
+        $scripts = $meta->getRequire();
+        foreach ($scripts as &$res) {
+            if (str_starts_with($res, '/')) $res = $res . '?' . time();
         }
+        $meta->setRequire($scripts);
 
         if (isset($require)) {
             $meta->addRequire($require . '?' . time());
