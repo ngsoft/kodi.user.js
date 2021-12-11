@@ -227,13 +227,15 @@ class Metadata implements Stringable, JsonSerializable, IteratorAggregate {
      *
      * @return static
      */
-    public function saveJSON() {
+    public function saveJSON(string $filename = null) {
 
-        if (!is_string($this->jsonmeta)) {
-            throw new RuntimeException('Cannot save metadata, no filename.');
+        $filename = $filename ?? $this->jsonmeta;
+
+        if (!is_string($filename) || !str_ends_with($filename, '.meta.json')) {
+            throw new RuntimeException('Cannot save metadata, invalid filename.');
         }
 
-        $json = json_encode($this, JSON_PRETTY_PRINT);
+        $json = $this->toJson();
         file_put_contents($this->jsonmeta, $json);
         return $this;
     }
@@ -243,11 +245,13 @@ class Metadata implements Stringable, JsonSerializable, IteratorAggregate {
      *
      * @return static
      */
-    public function saveMetaFile() {
-        if (!is_string($this->metascript)) {
-            throw new RuntimeException('Cannot save metadata, no filename.');
+    public function saveMetaFile(string $filename = null) {
+
+        $filename = $filename ?? $this->metascript;
+        if (!is_string($filename) || !str_ends_with($filename, '.meta.js')) {
+            throw new RuntimeException('Cannot save metadata, invalid filename.');
         }
-        file_put_contents($this->metascript, $this);
+        file_put_contents($filename, $this);
         return $this;
     }
 
@@ -728,7 +732,7 @@ class Metadata implements Stringable, JsonSerializable, IteratorAggregate {
 
 
         $regex_block = new RegExp('(?:[\/]{2,}\h*==UserScript==\n*)(.*)(?:[\/]{2,}\h*==\/UserScript==\n*)', RegExp::PCRE_DOTALL);
-        $regex_prop = new RegExp('[\/]{2,}\h*@([\w\-]+)\h*(.*)\n*', 'g');
+        $regex_prop = new RegExp('[\/]{2,}[ \t]*@([\w\-]+)[ \t]*(.*)\n*', 'g');
         $regex_key_value = new RegExp('^(.*)\h+(.*)$');
 
         if ($block = $regex_block->exec($contents)) {
@@ -766,7 +770,7 @@ class Metadata implements Stringable, JsonSerializable, IteratorAggregate {
                 foreach ($data as $prop => $value) {
                     $this->addProperty($prop);
                     if ($key = $this->getKey($prop)) {
-                        if (str_contains($prop, 'icon')) $this->{$key} = new Icon($value);
+                        if (str_contains($prop, 'icon')) $this->{$key} = new Icon($value, true);
                         else $this->{$key} = $value;
                         continue;
                     }
@@ -784,7 +788,7 @@ class Metadata implements Stringable, JsonSerializable, IteratorAggregate {
             $this->addProperty($prop);
             if ($key = $this->getKey($prop)) {
 
-                if (str_contains($prop, 'icon')) $value = new Icon($value);
+                if (str_contains($prop, 'icon')) $value = new Icon($value, true);
 
                 $this->{$key} = $value;
                 continue;
@@ -799,6 +803,11 @@ class Metadata implements Stringable, JsonSerializable, IteratorAggregate {
             $metadata[$prop] = $value;
         }
         return $metadata;
+    }
+
+    public function toJson(int $options = null) {
+        if (is_null($options)) $options = JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES;
+        return json_encode($this->toArray(), $options);
     }
 
     ////////////////////////////   Interfaces   ////////////////////////////

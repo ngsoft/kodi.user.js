@@ -10,7 +10,7 @@ use NGSOFT\Userscript\{
     Metadata, ResponseEmitter
 };
 use Psr\Http\Message\ResponseInterface;
-use function GuzzleHttp\json_encode;
+use function json_encode;
 
 if (php_sapi_name() == 'cli') {
     die('Cannot be run in cli.' . PHP_EOL);

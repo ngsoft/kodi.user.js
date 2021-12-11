@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-use NGSOFT\Userscript\Metadata;
+use NGSOFT\Userscript\{
+    Icon, Metadata
+};
 
 if (php_sapi_name() != 'cli') {
     die('Cannot be run in browser.' . PHP_EOL);
@@ -16,18 +18,11 @@ $sources = [
     'src'
 ];
 
-$major; $minor; $release;
-
 foreach (scandir($root) as $file) {
     if (!str_ends_with($file, '.meta.json')) continue;
 
     $script = preg_replace('#.meta.json$#', '.user.js', $file);
     $meta = Metadata::loadMetadata("$root/$file");
-
-    if (!$meta->getDefaulticon()) {
-        $i = new NGSOFT\Userscript\Icon($meta->getIcon(), true);
-        $meta->setDefaulticon($i->getBase64URL());
-    }
 
     $today = sprintf('%s.%s.', (string) intval(gmdate('y')), gmdate('m'));
     $version = '';
@@ -42,10 +37,12 @@ foreach (scandir($root) as $file) {
         $split = explode(".", $version);
         $rev = intval($split[2]) + 1;
     }
-    $meta->setVersion($today . $rev);
+    $version = $today . $rev;
+
+    //$meta->setVersion($today . $rev);
 
     if ($basepath = $meta->getCustom('basepath')) {
-        $basepath .= $meta->getVersion();
+        $basepath .= $version;
         $meta->removeCustom('basepath');
 
         $require = $meta->getRequire();
@@ -56,6 +53,7 @@ foreach (scandir($root) as $file) {
     }
 
 
+    //$meta->saveJSON();
     //file_put_contents("$root/$file", json_encode($meta, JSON_PRETTY_PRINT));
 
     list($script, $metafile) = [preg_replace('#\.meta\.json#', '.user.js', $file), preg_replace('#\.meta\.json#', '.meta.js', $file)];
