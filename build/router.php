@@ -93,7 +93,7 @@ if (isset($pathinfo) && $method == 'GET') {
         $meta->removeCustom('basepath');
         $scripts = $meta->getRequire();
         foreach ($scripts as &$res) {
-            if (str_starts_with($res, '/')) $res = $res . '?' . time();
+            if (str_starts_with($res, '/')) $res = $origin . $res . '?' . time();
         }
         $meta->setRequire($scripts);
 
