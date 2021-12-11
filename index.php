@@ -11,6 +11,19 @@ if (php_sapi_name() == 'cli') {
 
 require_once __DIR__ . '/build/vendor/autoload.php';
 
+function invalid_route() {
+    global $mimes;
+    header("HTTP/1.1 404 Not Found");
+    $mime = $mimes->getMimeType('json');
+    $contents = json_encode([
+        "error" => "404 Not Found"
+    ]);
+    $len = strlen($contents);
+    header(sprintf('Content-Type: %s', $mime, true));
+    header(sprintf('Content-Length: %u', $len, true));
+    die($contents);
+}
+
 /**
  * Dev Server Proxy Script
  */
@@ -45,7 +58,7 @@ if (isset($pathinfo)) {
         $metadata = preg_replace('#\.user\.js$#', '.meta.json', $script);
 
         if (!is_file("$root/$metadata")) {
-            throw new RuntimeException('Cannot find ' . $metadata);
+            invalid_route();
         }
         foreach ($sources as $dir) {
             if (is_file("$root/$dir/$script")) {
@@ -59,7 +72,7 @@ if (isset($pathinfo)) {
         $metadata = preg_replace('#\.js$#', '.json', $metafile);
 
         if (!is_file("$root/$metadata")) {
-            throw new RuntimeException('Cannot find ' . $metadata);
+            invalid_route();
         }
 
         foreach ($sources as $dir) {
@@ -75,19 +88,8 @@ if (isset($pathinfo)) {
         $len = strlen($contents);
         header(sprintf('Content-Type: %s', $mime, true));
         header(sprintf('Content-Length: %u', $len, true));
-
         die($contents);
-    } else {
-        header("HTTP/1.1 404 Not Found");
-        $mime = $mimes->getMimeType('json');
-        $contents = json_encode([
-            "error" => "404 Not Found"
-        ]);
-        $len = strlen($contents);
-        header(sprintf('Content-Type: %s', $mime, true));
-        header(sprintf('Content-Length: %u', $len, true));
-        die($contents);
-    }
+    } else invalid_route();
 
 
     $meta = Metadata::loadMetadata("$root/$metadata");
