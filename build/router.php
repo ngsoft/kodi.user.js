@@ -18,29 +18,21 @@ if (php_sapi_name() == 'cli') {
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-function render(string $contents = '', array $headers = [], int $code = 200): ResponseInterface {
-    global $factory;
+function render(ResponseInterface $response) {
+    global $factory, $mimes;
     $emitter = new ResponseEmitter();
-    $response = $factory->createResponse($code);
-    $headers['Content-Length'] = strlen($contents);
-    $body = $factory->createStream($contents);
-    $body->rewind();
-    foreach ($headers as $k => $v) {
-        $response = $response->withHeader($k, $v);
+    if ($emitter->isResponseEmpty($response) && $response->getStatusCode() > 400) {
+        $contents = json_encode(['error' => $response->getReasonPhrase(), 'code' => $response->getStatusCode()]);
+        $response = $response
+                ->withHeader('Content-Type', $mimes->getMimeType('json'))
+                ->withBody($factory->createStream($contents));
     }
-
-    $response = $response->withBody($body);
+    $body = $response->getBody();
+    $body->rewind();
+    $content = $body->getContents();
+    $response = $response->withHeader('Content-Length', strlen($content));
     $emitter->emit($response);
     exit;
-}
-
-function invalid_route() {
-    global $mimes;
-    $contents = json_encode(["error" => "404 Not Found"]);
-    $headers = [
-        'Content-Type' => $mimes->getMimeType('json')
-    ];
-    render($contents, $headers, 404);
 }
 
 /**
@@ -72,11 +64,10 @@ if (isset($pathinfo) && $method == 'GET') {
         return;
     }
 
-    //enable cors
-    $headers = [
-        'Access-Control-Allow-Origin' => '*',
-        'Access-Control-Allow-Methods' => 'GET,POST,OPTIONS,DELETE,PUT'
-    ];
+    $response = $factory->createResponse()
+            //enable cors
+            ->withHeader('Access-Control-Allow-Origin', $origin)
+            ->withHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,DELETE,PUT');
 
     if (preg_match('#^/proxy/(\w+.(user|meta).js)#', $pathinfo, $matches)) {
         $script = $matches[1];
@@ -85,7 +76,7 @@ if (isset($pathinfo) && $method == 'GET') {
         $metadata = preg_replace('#\.(user|meta)\.js$#', '.meta.json', $script);
 
         if (!is_file("$root/$metadata")) {
-            invalid_route();
+            render($factory->createResponse(404));
         }
         foreach ($sources as $dir) {
             if (is_file("$root/$dir/$script")) {
@@ -94,8 +85,6 @@ if (isset($pathinfo) && $method == 'GET') {
             }
         }
 
-
-
         $meta = Metadata::loadMetadata("$root/$metadata");
         $meta->setVersion(sprintf('%s.%s.dev', (string) intval(gmdate('y')), gmdate('m')));
 
@@ -103,21 +92,23 @@ if (isset($pathinfo) && $method == 'GET') {
             $meta->addRequire($require);
         }
 
-        $headers['Content-Type'] = $mimes->getMimeType('js');
-        $contents = (string) $meta;
-        $len = strlen($contents);
-        render($contents, $headers);
-    } elseif (is_file($root . $pathinfo) && realpath($root . $pathinfo) != __FILE__) {
+        $response = $response
+                ->withHeader('Content-Type', $mimes->getMimeType('js'))
+                ->withBody($factory->createStream((string) $meta));
+        render($response);
+    } elseif (is_file($root . $pathinfo) && realpath($root . $pathinfo) != realpath(__FILE__)) {
 
-        if (preg_match('#.(php|html)$#', $pathinfo)) {
+        if (preg_match('#.php$#', $pathinfo)) {
             require_once $root . $pathinfo;
             exit;
         }
-        $headers['Content-Type'] = $mimes->getMimeType(pathinfo($pathinfo, PATHINFO_EXTENSION));
-        $contents = file_get_contents($root . $pathinfo);
-        render($contents, $headers);
-    } else invalid_route();
+
+        $response = $response
+                ->withHeader('Content-Type', $mimes->getMimeType(pathinfo($pathinfo, PATHINFO_EXTENSION)))
+                ->withBody($factory->createStreamFromFile($root . $pathinfo));
+        render($response);
+    }
 }
 
-invalid_route();
+render($factory->createResponse(404));
 
