@@ -24,7 +24,7 @@ function render(ResponseInterface $response) {
     if ($emitter->isResponseEmpty($response) && $response->getStatusCode() > 400) {
         $contents = json_encode(['error' => $response->getReasonPhrase(), 'code' => $response->getStatusCode()]);
         $response = $response
-                ->withHeader('Content-Type', $mimes->getMimeType('json'))
+                ->withHeader('Content-Type', $mimes->getMimeType('json') . '; charset=utf-8')
                 ->withBody($factory->createStream($contents));
     }
     $body = $response->getBody();
@@ -67,7 +67,10 @@ if (isset($pathinfo) && $method == 'GET') {
     $response = $factory->createResponse()
             //enable cors
             ->withHeader('Access-Control-Allow-Origin', $origin)
-            ->withHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,DELETE,PUT');
+            ->withHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,DELETE,PUT')
+            ->withHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->withHeader('Pragma', 'no-cache')
+            ->withHeader('Expires', 'Wed, 12 Jan 1980 05:00:00 GMT');
 
     if (preg_match('#^/proxy/(\w+.(user|meta).js)#', $pathinfo, $matches)) {
         $script = $matches[1];
@@ -89,11 +92,11 @@ if (isset($pathinfo) && $method == 'GET') {
         $meta->setVersion(sprintf('%s.%s.dev', (string) intval(gmdate('y')), gmdate('m')));
 
         if (isset($require)) {
-            $meta->addRequire($require);
+            $meta->addRequire($require . '?' . time());
         }
 
         $response = $response
-                ->withHeader('Content-Type', $mimes->getMimeType('js'))
+                ->withHeader('Content-Type', $mimes->getMimeType('js') . '; charset=utf-8')
                 ->withBody($factory->createStream((string) $meta));
         render($response);
     } elseif (is_file($root . $pathinfo) && realpath($root . $pathinfo) != realpath(__FILE__)) {
@@ -104,7 +107,7 @@ if (isset($pathinfo) && $method == 'GET') {
         }
 
         $response = $response
-                ->withHeader('Content-Type', $mimes->getMimeType(pathinfo($pathinfo, PATHINFO_EXTENSION)))
+                ->withHeader('Content-Type', $mimes->getMimeType(pathinfo($pathinfo, PATHINFO_EXTENSION)) . '; charset=utf-8')
                 ->withBody($factory->createStreamFromFile($root . $pathinfo));
         render($response);
     }
