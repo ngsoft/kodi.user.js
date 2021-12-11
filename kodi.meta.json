@@ -26,8 +26,10 @@
     "require": [
         "https://cdn.jsdelivr.net/gh/mathiasbynens/utf8.js/utf8.min.js",
         "https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js",
-        "https://cdn.jsdelivr.net/gh/mitchellmebane/GM_fetch@master/GM_fetch.js"
+        "https://cdn.jsdelivr.net/gh/mitchellmebane/GM_fetch@master/GM_fetch.js",
+        "/lib/require.js"
     ],
+    "basepath": "https://cdn.jsdelivr.net/gh/ngsoft/kodi.user.js@",
     "include": [
         "*"
     ],
