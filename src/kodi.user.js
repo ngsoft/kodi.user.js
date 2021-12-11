@@ -4,7 +4,9 @@
 (function(global, root){
     
     const {document} = global;
-    console.debug(document, root.gmtools);
+    console.debug(gmtools);
+
+
 
 
 
