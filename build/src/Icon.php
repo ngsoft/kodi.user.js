@@ -16,8 +16,6 @@ use JsonSerializable,
 
 class Icon implements Stringable, JsonSerializable {
 
-    private const RE_HTTP = '#^https?://#';
-
     /** @var string */
     private $url;
 

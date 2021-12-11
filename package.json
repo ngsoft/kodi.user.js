@@ -4,5 +4,9 @@
     "keywords": ["util", "functional", "server", "client", "browser"],
     "author": "daedelus",
     "contributors": [],
-    "dependencies": {}
+    "dependencies": {},
+    "scripts": {
+        "start": "php -S 127.0.0.1:56789 ./index.php"
+
+    }
 }
