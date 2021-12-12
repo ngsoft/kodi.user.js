@@ -59,8 +59,11 @@ foreach ($sources as $dir) {
         // load metadata
 
         $meta = MetaBlock::loadFromFile($pathName);
-        var_dump(file_get_contents($pathName));
-        var_dump($meta->toJson());
+        foreach ($meta as list($prop, $val, $i)) {
+            var_dump($prop, $val);
+        }
+
+        var_dump((string) $meta);
     }
 }
 

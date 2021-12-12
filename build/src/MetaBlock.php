@@ -219,6 +219,7 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         if (str_contains($name, 'icon') && self::isBuiltin($name)) {
             $item = new Icon($value, true);
         } else $item->setValue($value);
+        $this->lastBuild = null;
         $this->properties[$name] = $name;
         if (!self::isBuiltin($name)) $this->custom[$name] = $name;
         return $this;
@@ -253,6 +254,7 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
                 } else $item->addValue($val, $index);
             }
         }
+        $this->lastBuild = null;
         $this->properties[$name] = $name;
         if (!self::isBuiltin($name)) $this->custom[$name] = $name;
         return $this;
@@ -264,18 +266,20 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
      * @return static
      */
     public function removeProperty(string $name) {
-
+        $this->lastBuild = null;
         unset($this->storage[$name]);
         unset($this->properties[$name]);
         return $this;
     }
 
+    /**
+     * Get a property
+     * @param string $name
+     * @return mixed
+     */
     public function getProperty(string $name) {
 
-        if (!isset($this->storage[$name])) {
-            return null;
-        }
-        $value = $this->storage[$name];
+        $value = $this->storage[$name] ?? null;
 
         if ($value instanceof Icon) {
             $value = (string) $value;
@@ -318,6 +322,7 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
 
     private function build(): string {
         $result = '';
+
         return $result;
     }
 
