@@ -59,8 +59,11 @@ foreach ($sources as $dir) {
         // load metadata
 
         $meta = MetaBlock::loadFromFile($pathName);
+        // $meta->setProperty('version', '1.0');
+        print $meta;
+        $meta->setProperty('grant', 'none');
 
-        var_dump((string) $meta);
+        var_dump($meta->getProperty('version'), $meta->getDocComment(), $meta->toJson());
     }
 }
 
