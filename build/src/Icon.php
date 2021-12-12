@@ -14,7 +14,7 @@ use JsonSerializable,
     Stringable,
     Throwable;
 
-class Icon implements Stringable, JsonSerializable {
+class Icon extends Named implements Stringable, JsonSerializable, \IteratorAggregate {
 
     /** @var string */
     private $url;
@@ -31,7 +31,9 @@ class Icon implements Stringable, JsonSerializable {
     /** @var HttpFactory */
     private $httpFactory;
 
-    public function __construct($url, bool $convert = false) {
+    public function __construct(string $name, $url, bool $convert = false) {
+
+        parent::__construct($name);
         $this->httpFactory = new HttpFactory();
         if (is_string($url)) $this->url = $url;
         elseif (is_array($url)) {
@@ -104,6 +106,10 @@ class Icon implements Stringable, JsonSerializable {
         }
 
         return null;
+    }
+
+    public function getIterator() {
+        yield [$this->name, $this->getBase64URL() ?? $this->url, 0];
     }
 
     public function jsonSerialize() {

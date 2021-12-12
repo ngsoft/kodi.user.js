@@ -220,6 +220,8 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
             $item = new Icon($value, true);
         } else $item->setValue($value);
         $this->lastBuild = null;
+        $len = strlen($name);
+        if ($len > $this->maxLength) $this->maxLength = $len;
         $this->properties[$name] = $name;
         if (!self::isBuiltin($name)) $this->custom[$name] = $name;
         return $this;
@@ -254,7 +256,10 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
                 } else $item->addValue($val, $index);
             }
         }
+
         $this->lastBuild = null;
+        $len = strlen($name);
+        if ($len > $this->maxLength) $this->maxLength = $len;
         $this->properties[$name] = $name;
         if (!self::isBuiltin($name)) $this->custom[$name] = $name;
         return $this;
@@ -278,9 +283,7 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
      * @return mixed
      */
     public function getProperty(string $name) {
-
         $value = $this->storage[$name] ?? null;
-
         if ($value instanceof Icon) {
             $value = (string) $value;
         } elseif ($value instanceof MetaTag) {
@@ -319,6 +322,29 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
 
     ////////////////////////////   Builder   ////////////////////////////
 
+    private function getFormatIterator() {
+
+        $properties = $this->properties;
+        $len = 0;
+        foreach (self::SORT_TAGS as $block) {
+            if ($len > 0) yield '' => '';
+            $len = 0;
+
+            foreach ($block as $tag) {
+                if ($tag == 'custom') {
+                    foreach ($this->custom as $prop => $value) {
+                        $len++;
+                        yield $prop => $value;
+                    }
+                    continue;
+                }
+                if (isset($properties[$tag])) {
+                    $len++;
+                    if ($key = $this->getKey($tag)) yield $tag => $this->{$key};
+                }
+            }
+        }
+    }
 
     private function build(): string {
         $result = '';

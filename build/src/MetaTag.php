@@ -4,30 +4,15 @@ declare(strict_types=1);
 
 namespace NGSOFT\Userscript;
 
-class MetaTag implements \JsonSerializable, \IteratorAggregate, \Stringable {
+class MetaTag extends Named implements \JsonSerializable, \IteratorAggregate, \Stringable {
 
     use \NGSOFT\Traits\UnionType;
-
-    /** @var string */
-    private $name;
 
     /** @var string[] */
     private $values = [];
 
     /** @var ?string */
     private $lastBuild;
-
-    public function __construct(string $name) {
-        $this->name = $name;
-    }
-
-    /**
-     * Name
-     * @return string
-     */
-    public function getName(): string {
-        return $this->name;
-    }
 
     /**
      * Get Values
