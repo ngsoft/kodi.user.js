@@ -216,7 +216,9 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
             if ($value === true) $value = '';
             else return $this->removeProperty($name);
         }
-        $item->setValue($value);
+        if (str_contains($name, 'icon') && self::isBuiltin($name)) {
+            $item = new Icon($value, true);
+        } else $item->setValue($value);
         $this->properties[$name] = $name;
         if (!self::isBuiltin($name)) $this->custom[$name] = $name;
         return $this;
@@ -239,7 +241,9 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
             else return $this->removeProperty($name);
         }
 
-        if (is_string($value)) {
+        if (str_contains($name, 'icon') && self::isBuiltin($name)) {
+            $item = new Icon($value, true);
+        } elseif (is_string($value)) {
             if (self::isUnique($name)) $item->setValue($value);
             else $item->addValue($value);
         } else {
