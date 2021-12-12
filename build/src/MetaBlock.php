@@ -13,7 +13,9 @@ use NGSOFT\{
 };
 use RuntimeException,
     Stringable;
-use function json_encode;
+use function json_decode,
+             json_encode,
+             str_ends_with;
 
 /**
  * @link https://www.tampermonkey.net/documentation.php?ext=dhdg
@@ -82,6 +84,9 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
      */
     private $maxLength = 0;
 
+    /** @var string[] */
+    private $properties = [];
+
     /**
      * @return FileName
      */
@@ -135,6 +140,12 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         return $re;
     }
 
+    private static function RE_BUILTIN(): RegExp {
+        static $re;
+        $re = $re ?? RegExp::create(sprintf('^(?:(%s)(?:\:[\w\-]+)?)$', implode('|', self::BUILTIN_TAGS)));
+        return $re;
+    }
+
     ////////////////////////////   Implemetation   ////////////////////////////
 
     /**
@@ -183,6 +194,45 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         return $instance;
     }
 
+    ////////////////////////////   Getters/Setters   ////////////////////////////
+
+
+    public function setProperty(string $name, $value) {
+        $this->checkType($value, 'string', 'array', 'bool');
+        $isBuiltIn = false;
+        $prop = $name;
+        $isUnique = false;
+        if ($matches = self::RE_BUILTIN()->exec($name)) {
+            $isBuiltIn = true;
+            $prop = $matches[1];
+            $isUnique = in_array($prop, self::UNIQUE_TAGS);
+        }
+        $this->storage[$name] = $this->storage[$name] ?? new MetaTag($name);
+        $item = &$this->storage[$name];
+
+        if (is_bool($value)) {
+            if ($value === true) $value = '';
+            else return $this->unset($name);
+        }
+
+        if (is_string($value)) {
+
+        }
+
+
+
+
+
+        return $this;
+    }
+
+    public function removeProperty(string $name) {
+
+        unset($this->storage[$name]);
+        unset($this->properties[$name]);
+        return $this;
+    }
+
     ////////////////////////////   Parser   ////////////////////////////
 
 
@@ -191,6 +241,9 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
 
         if ($data = json_decode($json, true)) {
 
+            foreach ($data as $tag => $value) {
+
+            }
         }
     }
 
