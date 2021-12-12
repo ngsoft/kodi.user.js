@@ -6,7 +6,9 @@
     const {document} = global;
 
 
-    console.debug(gmtools);
+    console.debug(gmtools, storage);
+
+
 
 
 
