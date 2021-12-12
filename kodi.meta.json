@@ -29,7 +29,9 @@
         "https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.js",
         "https://cdn.jsdelivr.net/gh/mitchellmebane/GM_fetch@master/GM_fetch.js",
         "/lib/modules/gmtools.js",
+        "/lib/modules/emitter.js",
         "/lib/modules/storage.js"
+
 
     ],
     "basepath": "https://cdn.jsdelivr.net/gh/ngsoft/kodi.user.js@",
