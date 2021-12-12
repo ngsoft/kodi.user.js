@@ -128,7 +128,10 @@ class MetaTag implements \JsonSerializable, \IteratorAggregate, \Stringable {
     }
 
     public function __debugInfo() {
-        return $this->jsonSerialize();
+        return [
+            'name' => $this->name,
+            'values' => $this->values
+        ];
     }
 
 }

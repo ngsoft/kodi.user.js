@@ -87,6 +87,9 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
     /** @var string[] */
     private $properties = [];
 
+    /** @var string[] */
+    private $custom = [];
+
     /**
      * @return FileName
      */
@@ -108,7 +111,7 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
      */
     public function setFileName($fileName) {
         $this->checkType($fileName, FileName::class, 'string');
-        $this->fileName = $fileName;
+        $this->fileName = $fileName instanceof FileName ? $fileName : new FileName($fileName);
         return $this;
     }
 
@@ -171,7 +174,7 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
             throw new RuntimeException($filename . ' does not exists.');
         }
 
-        $file = pathinfo($filename, PATHINFO_FILENAME);
+        $file = basename($filename);
         $dirName = dirname($filename);
         $extensions = implode('|', [self::EXT_JSON, self::EXT_META, self::EXT_USERSCRIPT]);
         if (!preg_match(sprintf('#(%s)$#', $extensions), $file)) {
@@ -196,8 +199,42 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
 
     ////////////////////////////   Getters/Setters   ////////////////////////////
 
-
+    /**
+     * Set a property
+     *
+     * @param string $name
+     * @param string|array|bool $value
+     * @return static
+     */
     public function setProperty(string $name, $value) {
+        $this->checkType($value, 'string', 'array', 'bool');
+        $isBuiltIn = false;
+        $prop = $name;
+        $isUnique = false;
+        if ($matches = self::RE_BUILTIN()->test($name)) {
+            $isBuiltIn = true;
+        }
+        $this->storage[$name] = $this->storage[$name] ?? new MetaTag($name);
+        /** @var MetaTag $item */
+        $item = &$this->storage[$name];
+
+        if (is_bool($value)) {
+            if ($value === true) $value = '';
+            else return $this->removeProperty($name);
+        }
+        $item->setValue($value);
+        $this->properties[$name] = $name;
+        if (!$isBuiltIn) $this->custom[$name] = $name;
+        return $this;
+    }
+
+    /**
+     * Appends property
+     *
+     * @param string $name
+     * @param string|array|bool $value
+     */
+    public function addProperty(string $name, $value) {
         $this->checkType($value, 'string', 'array', 'bool');
         $isBuiltIn = false;
         $prop = $name;
@@ -208,24 +245,32 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
             $isUnique = in_array($prop, self::UNIQUE_TAGS);
         }
         $this->storage[$name] = $this->storage[$name] ?? new MetaTag($name);
+        /** @var MetaTag $item */
         $item = &$this->storage[$name];
-
         if (is_bool($value)) {
             if ($value === true) $value = '';
-            else return $this->unset($name);
+            else return $this->removeProperty($name);
         }
 
-        if (is_string($value)) {
+        if ($isUnique) $item->setValue($value);
+        elseif (is_array($value)) {
 
-        }
-
-
-
-
-
+            foreach ($value as $index => $val) {
+                if (!is_string($index)) {
+                    $item->addValue($val);
+                } else $item->addValue($val, $index);
+            }
+        } else $item->addValue($value);
+        $this->properties[$name] = $name;
+        if (!$isBuiltIn) $this->custom[$name] = $name;
         return $this;
     }
 
+    /**
+     * Removes a property
+     * @param string $name
+     * @return static
+     */
     public function removeProperty(string $name) {
 
         unset($this->storage[$name]);
@@ -243,6 +288,7 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
 
             foreach ($data as $tag => $value) {
 
+                $this->addProperty($tag, $value);
             }
         }
     }
@@ -284,7 +330,11 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
     }
 
     public function __debugInfo() {
-        return $this->jsonSerialize();
+
+        return [
+            'fileName' => $this->fileName,
+            'data' => $this->storage
+        ];
     }
 
     private function __construct() {

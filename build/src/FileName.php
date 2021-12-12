@@ -50,7 +50,7 @@ class FileName implements JsonSerializable, Stringable {
             'userscript' => $this->getUserScript(),
             'metadata' => [
                 'userscript' => $this->getMetaScript(),
-                'json' => $this->getJsonMetaFile()
+                'json' => $this->getMetaJson()
             ],
         ];
     }
@@ -61,6 +61,11 @@ class FileName implements JsonSerializable, Stringable {
 
     public function __toString() {
         return $this->name;
+    }
+
+    public function __debugInfo() {
+
+        return $this->toArray();
     }
 
 }

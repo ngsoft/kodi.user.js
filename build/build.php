@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-use NGSOFT\Userscript\{
-    Icon, Metadata
+use NGSOFT\{
+    Tools, Userscript\FileName, Userscript\Metadata
 };
+use function GuzzleHttp\json_decode;
 
 if (php_sapi_name() != 'cli') {
     die('Cannot be run in browser.' . PHP_EOL);
@@ -20,25 +21,66 @@ function saveFile($contents, string $filename) {
     return file_put_contents($filename, $toSave) !== false;
 }
 
+$prev = null;
 $root = __DIR__;
-while (!is_file("$root/package.json")) {
+
+while (!is_file("$root/builder.json")) {
     if ($root == $prev) {
-        throw new RuntimeException('Cannot find project root dir(package.json).');
+        throw new RuntimeException('Cannot find project root dir(builder.json).');
     }
     $prev = $root;
     $root = dirname($root);
 }
 
-echo "$root\n";
+$config = json_decode(file_get_contents("$root/builder.json"));
+
+$sources = $config->sources;
+$destination = "$root/" . $config->destination;
+$found = false;
+
+var_dump($destination);
+//echo "$root\n";
+
+foreach ($sources as $dir) {
+
+    $path = "$root/$dir";
+    if (!is_dir($path)) {
+        throw new RuntimeException('Directory ' . $path . ' does not exists.');
+    }
+    /** @var SplFileInfo $fileObj */
+    foreach (Tools::getRecursiveDirectoryIterator($path, '.json') as $fileObj) {
+
+        if (!$fileObj->isFile()) continue;
+        if (!str_ends_with($fileObj->getFilename(), '.meta.json')) continue;
+        $fileName = new FileName($fileObj->getFilename());
+        $pathName = $fileObj->getPathname();
+        $dirName = dirname($fileObj->getPathname());
+
+        if (!is_file("$dirName/" . $fileName->getUserScript())) {
+            printf("Found %s but no userscript %s, ignoring ...\n", $pathName, $fileName->getUserScript());
+            continue;
+        }
+        var_dump($fileName, $dirName, $pathName);
+        // load metadata
+
+        $meta = \NGSOFT\Userscript\MetaBlock::loadFromFile($pathName);
+
+        var_dump($meta);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
 
 exit;
-
-$sources = [
-    'src',
-    'src/resolvers'
-];
-
-$destination = "$root/dist";
 
 foreach (scandir($root) as $file) {
     if (!str_ends_with($file, '.meta.json')) continue;
