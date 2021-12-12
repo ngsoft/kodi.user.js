@@ -36,6 +36,11 @@ $config = json_decode(file_get_contents("$root/builder.json"));
 
 $sources = $config->sources;
 $destination = "$root/" . $config->destination;
+
+if (!is_dir($destination)) {
+    throw new RuntimeException('Destination folder ' . $destination . ' does not exists.');
+}
+
 $found = false;
 foreach ($sources as $dir) {
 
@@ -57,13 +62,19 @@ foreach ($sources as $dir) {
             continue;
         }
         // load metadata
-
         $meta = MetaBlock::loadFromFile($pathName);
-        // $meta->setProperty('version', '1.0');
-        print $meta;
-        $meta->setProperty('grant', 'none');
 
-        var_dump($meta->getProperty('version'), $meta->getDocComment(), $meta->toJson());
+        if ($basepath = $meta->getCustom('basepath')) {
+            $basepath .= $version;
+            $meta->removeCustom('basepath');
+            $require = $meta->getRequire();
+            foreach ($require as &$res) {
+                if ($res[0] == '/') $res = $basepath . $res;
+            }
+            $meta->setRequire($require);
+        }
+
+        var_dump($meta->getProperty('require'));
     }
 }
 
