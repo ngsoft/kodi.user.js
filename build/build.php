@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use NGSOFT\{
-    Tools, Userscript\FileName, Userscript\Metadata
+    Tools, Userscript\FileName, Userscript\MetaBlock, Userscript\Metadata
 };
 use function GuzzleHttp\json_decode;
 
@@ -37,10 +37,6 @@ $config = json_decode(file_get_contents("$root/builder.json"));
 $sources = $config->sources;
 $destination = "$root/" . $config->destination;
 $found = false;
-
-var_dump($destination);
-//echo "$root\n";
-
 foreach ($sources as $dir) {
 
     $path = "$root/$dir";
@@ -60,12 +56,11 @@ foreach ($sources as $dir) {
             printf("Found %s but no userscript %s, ignoring ...\n", $pathName, $fileName->getUserScript());
             continue;
         }
-        var_dump($fileName, $dirName, $pathName);
         // load metadata
 
-        $meta = \NGSOFT\Userscript\MetaBlock::loadFromFile($pathName);
-
-        var_dump($meta);
+        $meta = MetaBlock::loadFromFile($pathName);
+        var_dump(file_get_contents($pathName));
+        var_dump($meta->toJson());
     }
 }
 

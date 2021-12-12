@@ -91,10 +91,16 @@ class MetaTag implements \JsonSerializable, \IteratorAggregate, \Stringable {
 
     /** {@inheritdoc} */
     public function jsonSerialize() {
+
+        $isBuiltin = MetaBlock::isBuiltin($this->name);
+        $isUnique = MetaBlock::isUnique($this->name);
+
         if (count($this->values) == 1) {
-            $value = $this->getValue();
-            if (empty($value)) $value = true;
-            return $value;
+            if ($isUnique || !$isBuiltin) {
+                $value = $this->getValue();
+                if (empty($value)) $value = true;
+                return $value;
+            }
         }
         return $this->getValues();
     }
@@ -128,10 +134,9 @@ class MetaTag implements \JsonSerializable, \IteratorAggregate, \Stringable {
     }
 
     public function __debugInfo() {
-        return [
-            'name' => $this->name,
-            'values' => $this->values
-        ];
+
+
+        return $this->values;
     }
 
 }

@@ -208,12 +208,6 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
      */
     public function setProperty(string $name, $value) {
         $this->checkType($value, 'string', 'array', 'bool');
-        $isBuiltIn = false;
-        $prop = $name;
-        $isUnique = false;
-        if ($matches = self::RE_BUILTIN()->test($name)) {
-            $isBuiltIn = true;
-        }
         $this->storage[$name] = $this->storage[$name] ?? new MetaTag($name);
         /** @var MetaTag $item */
         $item = &$this->storage[$name];
@@ -224,7 +218,7 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         }
         $item->setValue($value);
         $this->properties[$name] = $name;
-        if (!$isBuiltIn) $this->custom[$name] = $name;
+        if (!self::isBuiltin($name)) $this->custom[$name] = $name;
         return $this;
     }
 
@@ -236,14 +230,7 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
      */
     public function addProperty(string $name, $value) {
         $this->checkType($value, 'string', 'array', 'bool');
-        $isBuiltIn = false;
-        $prop = $name;
-        $isUnique = false;
-        if ($matches = self::RE_BUILTIN()->exec($name)) {
-            $isBuiltIn = true;
-            $prop = $matches[1];
-            $isUnique = in_array($prop, self::UNIQUE_TAGS);
-        }
+
         $this->storage[$name] = $this->storage[$name] ?? new MetaTag($name);
         /** @var MetaTag $item */
         $item = &$this->storage[$name];
@@ -252,17 +239,18 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
             else return $this->removeProperty($name);
         }
 
-        if ($isUnique) $item->setValue($value);
-        elseif (is_array($value)) {
-
+        if (is_string($value)) {
+            if (self::isUnique($name)) $item->setValue($value);
+            else $item->addValue($value);
+        } else {
             foreach ($value as $index => $val) {
                 if (!is_string($index)) {
                     $item->addValue($val);
                 } else $item->addValue($val, $index);
             }
-        } else $item->addValue($value);
+        }
         $this->properties[$name] = $name;
-        if (!$isBuiltIn) $this->custom[$name] = $name;
+        if (!self::isBuiltin($name)) $this->custom[$name] = $name;
         return $this;
     }
 
@@ -278,16 +266,40 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         return $this;
     }
 
+    public function getProperty(string $name) {
+
+        if (!isset($this->storage[$name])) {
+            return null;
+        }
+        $value = $this->storage[$name];
+
+        if ($value instanceof Icon) {
+            $value = (string) $value;
+        } elseif ($value instanceof MetaTag) {
+            $value = $value->jsonSerialize();
+        }
+        return $value;
+    }
+
     ////////////////////////////   Parser   ////////////////////////////
 
 
+    public static function isBuiltin(string $name): bool {
+
+        return self::RE_BUILTIN()->test($name);
+    }
+
+    public static function isUnique(string $name): bool {
+        $prop = $name;
+        if ($matches = self::RE_BUILTIN()->exec($name)) {
+            $prop = $matches[1];
+        }
+        return in_array($prop, self::UNIQUE_TAGS);
+    }
 
     private function parseJson(string $json) {
-
         if ($data = json_decode($json, true)) {
-
             foreach ($data as $tag => $value) {
-
                 $this->addProperty($tag, $value);
             }
         }
