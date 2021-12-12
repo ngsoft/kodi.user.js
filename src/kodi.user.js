@@ -19,7 +19,7 @@
     });
 
 
-    xsessionStorage.offValueChange('myKey2', e => e);
+    xsessionStorage.offValueChange('myKey2');
 
     xsessionStorage.set('myKey', 'myNewValue');
 
