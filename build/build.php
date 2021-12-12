@@ -12,11 +12,33 @@ if (php_sapi_name() != 'cli') {
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-$root = dirname(__DIR__);
+function saveFile($contents, string $filename) {
+    $toSave = (string) $contents;
+
+    $dir = dirname($filename);
+    if (!is_dir($filename)) @mkdir($dir, 0777, true);
+    return file_put_contents($filename, $toSave) !== false;
+}
+
+$root = __DIR__;
+while (!is_file("$root/package.json")) {
+    if ($root == $prev) {
+        throw new RuntimeException('Cannot find project root dir(package.json).');
+    }
+    $prev = $root;
+    $root = dirname($root);
+}
+
+echo "$root\n";
+
+exit;
 
 $sources = [
-    'src'
+    'src',
+    'src/resolvers'
 ];
+
+$destination = "$root/dist";
 
 foreach (scandir($root) as $file) {
     if (!str_ends_with($file, '.meta.json')) continue;
@@ -54,10 +76,9 @@ foreach (scandir($root) as $file) {
 
 
     //$meta->saveJSON();
-    //file_put_contents("$root/$file", json_encode($meta, JSON_PRETTY_PRINT));
 
     list($script, $metafile) = [preg_replace('#\.meta\.json#', '.user.js', $file), preg_replace('#\.meta\.json#', '.meta.js', $file)];
-    $dest = "$root/$script";
+    $destScript = "$destination/$script";
     $found = false;
     foreach ($sources as $dir) {
         $path = "$root/$dir/$script";
@@ -68,8 +89,8 @@ foreach (scandir($root) as $file) {
 
             $contents = (string) $meta . $contents;
             printf("Saving %s, %s", $script, $metafile);
-            file_put_contents($dest, $contents);
-            $meta->saveMetaFile();
+            //file_put_contents($destScript, $contents);
+            //$meta->saveMetaFile();
         }
     }
     if (!$found) throw new RuntimeException('Cannot find script ' . $script);

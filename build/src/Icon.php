@@ -23,6 +23,9 @@ class Icon implements Stringable, JsonSerializable {
     private $b64URL;
 
     /** @var bool */
+    private $changed = false;
+
+    /** @var bool */
     private $convert;
 
     /** @var HttpFactory */
@@ -33,7 +36,7 @@ class Icon implements Stringable, JsonSerializable {
         if (is_string($url)) $this->url = $url;
         elseif (is_array($url)) {
             foreach ($url as $prop => $val) {
-                $this->{$prop} = $val;
+                if (property_exists($this, $prop)) $this->{$prop} = $val;
             }
         } else throw new RuntimeException('Invalid URL.');
         $this->convert = $convert;
@@ -47,6 +50,10 @@ class Icon implements Stringable, JsonSerializable {
 
     public function getURL(): string {
         return $this->url;
+    }
+
+    public function getChanged(): bool {
+        return $this->changed;
     }
 
     public function getFilename(): ?string {
@@ -86,6 +93,7 @@ class Icon implements Stringable, JsonSerializable {
                         $body = $response->getBody();
                         $body->rewind();
                         if (!empty($contents = $body->getContents())) {
+                            $this->changed = true;
                             return $this->b64URL = sprintf('data:%s;base64,%s', $mime, base64_encode($contents));
                         }
                     }
