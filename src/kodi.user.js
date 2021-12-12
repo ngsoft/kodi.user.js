@@ -5,26 +5,32 @@
 
     const { document } = root.gmtools.window;
 
-    const { GM_Storage, xsessionStorage } = root.storage;
+    const {GM_Storage, xsessionStorage, MemoryStorage} = root.storage;
 
     const { emitter } = root.emitter;
 
+    const mem = new MemoryStorage();
 
-    xsessionStorage.onValueChange('myKey2', (...args) => {
+    mem.onValueChange('myKey2', (...args) => {
         console.debug(args);
     });
 
-    xsessionStorage.onValueChange('myKey', (...args) => {
+    mem.onValueChange('myKey', (...args) => {
         console.debug(args);
     });
 
 
-    xsessionStorage.offValueChange('myKey2');
-
-    xsessionStorage.set('myKey', 'myNewValue');
 
 
-    xsessionStorage.set('myKey2', ['myNewValue' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)]);
+
+
+
+    mem.set('myKey2', ['myNewValue' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)]).then(() => {
+        //mem.offValueChange('myKey2');
+        mem.set('myKey2', ['myNewValue' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)]);
+    });
+    mem.set('myKey', 'myNewValue');
+
 
 
 
