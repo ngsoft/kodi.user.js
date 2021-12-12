@@ -3,11 +3,9 @@
 
 (function(global, root){
     
-    const {document} = global;
+    const {document} = root.gmtools.window;
 
-
-    console.debug(gmtools, storage);
-
+    const {GM_Storage} = root.storage;
 
 
 
