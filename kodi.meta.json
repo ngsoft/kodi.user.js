@@ -30,7 +30,8 @@
         "https://cdn.jsdelivr.net/gh/mitchellmebane/GM_fetch@master/GM_fetch.js",
         "/lib/modules/gmtools.js",
         "/lib/modules/emitter.js",
-        "/lib/modules/storage.js"
+        "/lib/modules/storage.js",
+        "/lib/modules/nodefinder.js"
 
 
     ],
