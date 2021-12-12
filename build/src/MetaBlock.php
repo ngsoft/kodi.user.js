@@ -9,9 +9,10 @@ use ArrayAccess,
     IteratorAggregate,
     JsonSerializable;
 use NGSOFT\{
-    RegExp, Traits\ArrayAccessCountable
+    RegExp, Traits\ArrayAccessCountable, Traits\UnionType
 };
-use Stringable;
+use RuntimeException,
+    Stringable;
 use function json_encode;
 
 /**
@@ -19,7 +20,8 @@ use function json_encode;
  */
 class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable, IteratorAggregate {
 
-    use ArrayAccessCountable;
+    use ArrayAccessCountable,
+        UnionType;
 
     private const BUILTIN_TAGS = [
         'version', 'name', 'description', 'author',
@@ -68,6 +70,53 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
     /** @var FileName */
     private $fileName;
 
+    /** @var ?string */
+    private $lastBuild;
+
+    /** @var int */
+    private $indent = 1;
+
+    /**
+     * tag name max length (for builder)
+     * @var int
+     */
+    private $maxLength = 0;
+
+    /**
+     * @return FileName
+     */
+    public function getFileName(): FileName {
+        return $this->fileName;
+    }
+
+    /**
+     * @return int
+     */
+    public function getIndent(): int {
+        return $this->indent;
+    }
+
+    /**
+     * Set Filename
+     * @param FileName|string $fileName
+     * @return static
+     */
+    public function setFileName($fileName) {
+        $this->checkType($fileName, FileName::class, 'string');
+        $this->fileName = $fileName;
+        return $this;
+    }
+
+    /**
+     * Set indentation between tag name and value
+     * @param int $indent
+     * @return static
+     */
+    public function setIndent(int $indent) {
+        $this->indent = max($indent, 1);
+        return $this;
+    }
+
     private static function RE_BLOCK(): RegExp {
         static $re;
         $re = $re ?? RegExp::create('(?:[\/]{2,}\s*==UserScript==\n*)([\s\S]*)(?:[\/]{2,}\s*==\/UserScript==\n*)');
@@ -86,9 +135,79 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         return $re;
     }
 
-    private function __construct() {
+    ////////////////////////////   Implemetation   ////////////////////////////
+
+    /**
+     * Creates a new instance
+     *
+     * @param string $name userscript name
+     * @return static
+     */
+    static public function create(string $name): self {
+        $instance = new static();
+        $instance->setFileName($name);
+        return $instance;
+    }
+
+    /**
+     * Loads Metadata from file
+     * @param string $filename
+     * @return static
+     */
+    public static function loadFromFile(string $filename): self {
+
+        if (!is_file($filename)) {
+            throw new RuntimeException($filename . ' does not exists.');
+        }
+
+        $file = pathinfo($filename, PATHINFO_FILENAME);
+        $dirName = dirname($filename);
+        $extensions = implode('|', [self::EXT_JSON, self::EXT_META, self::EXT_USERSCRIPT]);
+        if (!preg_match(sprintf('#(%s)$#', $extensions), $file)) {
+            throw new RuntimeException('Cannot import ' . $file . ' invalid extension(' . $extensions . ').');
+        }
+
+        $instance = new static();
+        $instance->setFileName($file);
+        $contents = file_get_contents($filename);
+        if (str_ends_with($file, self::EXT_JSON)) {
+            //import json
+            $instance->parseJson($contents);
+            return $instance;
+        }
+
+        //import headers
+
+        $instance->parseHeaders($contents);
+
+        return $instance;
+    }
+
+    ////////////////////////////   Parser   ////////////////////////////
+
+
+
+    private function parseJson(string $json) {
+
+        if ($data = json_decode($json, true)) {
+
+        }
+    }
+
+    private function parseHeaders(string $jsCode) {
 
     }
+
+    ////////////////////////////   Builder   ////////////////////////////
+
+
+    private function build(): string {
+        $result = '';
+        return $result;
+    }
+
+    ////////////////////////////   Interfaces   ////////////////////////////
+
 
     public function getIterator() {
         foreach ($this->storage as $item) {
@@ -107,18 +226,16 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         return $this->storage;
     }
 
-    private function build(): string {
-        $result = '';
-        return $result;
-    }
-
     public function __toString() {
-
         return $this->build();
     }
 
     public function __debugInfo() {
         return $this->jsonSerialize();
+    }
+
+    private function __construct() {
+
     }
 
 }

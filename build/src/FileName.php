@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NGSOFT\Userscript;
 
 use JsonSerializable,
+    RuntimeException,
     Stringable;
 
 class FileName implements JsonSerializable, Stringable {
@@ -21,7 +22,12 @@ class FileName implements JsonSerializable, Stringable {
     }
 
     public function setName(string $name) {
-        $this->name = preg_replace('#.(meta|user).js\w*?$#', '', $name);
+        $name = preg_replace('#.(meta|user).js\w*?$#', '', $name);
+        if (!preg_match('/[\w\-]+/', $name)) {
+            throw new RuntimeException('Invalid name: ' . $name);
+        }
+
+        $this->name = $name;
         return $this;
     }
 

@@ -79,7 +79,8 @@ class MetaTag implements \JsonSerializable, \IteratorAggregate, \Stringable {
 
     /** {@inheritdoc} */
     public function jsonSerialize() {
-        return [$this->name => $this->values];
+        if (count($this->values) == 1) return $this->values[0];
+        return $this->values;
     }
 
     /**
