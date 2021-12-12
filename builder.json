@@ -1,0 +1,19 @@
+{
+    "description": "php userscript builder configuration file",
+    "sources": [
+        "src"
+    ],
+    "destination": "dist",
+    "proxy": {
+        "description": "Proxy configuration that can be launched using 'npm start'",
+        "path": "/proxy/%s",
+        "headers": {
+            "Access-Control-Allow-Origin": "http://127.0.0.1:56789",
+            "Access-Control-Allow-Methods": "GET,POST",
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "Wed, 12 Jan 1980 05:00:00 GMT"
+        }
+
+    }
+}
