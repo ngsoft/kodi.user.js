@@ -217,7 +217,7 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
             else return $this->removeProperty($name);
         }
         if (str_contains($name, 'icon') && self::isBuiltin($name)) {
-            $item = new Icon($value, true);
+            $item = new Icon($name, $value, true);
         } else $item->setValue($value);
         $this->lastBuild = null;
         $len = strlen($name);
@@ -245,7 +245,7 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         }
 
         if (str_contains($name, 'icon') && self::isBuiltin($name)) {
-            $item = new Icon($value, true);
+            $item = new Icon($name, $value, true);
         } elseif (is_string($value)) {
             if (self::isUnique($name)) $item->setValue($value);
             else $item->addValue($value);
@@ -327,29 +327,60 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         $properties = $this->properties;
         $len = 0;
         foreach (self::SORT_TAGS as $block) {
-            if ($len > 0) yield '' => '';
+            if ($len > 0) yield ['', '', 0];
             $len = 0;
 
             foreach ($block as $tag) {
                 if ($tag == 'custom') {
-                    foreach ($this->custom as $prop => $value) {
+                    foreach ($this->custom as $prop) {
                         $len++;
-                        yield $prop => $value;
+                        yield from $this->storage[$prop];
                     }
                     continue;
                 }
                 if (isset($properties[$tag])) {
                     $len++;
-                    if ($key = $this->getKey($tag)) yield $tag => $this->{$key};
+                    yield from $this->storage[$tag];
                 }
             }
         }
     }
 
-    private function build(): string {
-        $result = '';
+    public function getDocComment(): string {
+        if (is_string($this->lastBuild)) return $this->lastBuild;
 
-        return $result;
+        $comments = '';
+
+        $maxLen = $this->maxLength;
+        foreach ($this->getFormatIterator() as list($tag, $value, $index)) {
+            $comment = '//';
+            if (empty($tag)) {
+                $comment .= "\n";
+                $comments .= $comment;
+                continue;
+            }
+            $comment .= " @";
+            $comment .= $tag;
+            if (empty($value)) {
+                $comment .= "\n";
+                $comments .= $comment;
+                continue;
+            }
+
+            for ($i = strlen($tag); $i < $this->maxLength + $this->indent; $i++) {
+                $comment .= " ";
+            }
+
+            if (is_string($index)) {
+                $comment .= "$index ";
+            }
+            $comment .= "$value\n";
+            $comments .= $comment;
+        }
+
+        $result = sprintf("// ==UserScript==\n%s// ==/UserScript==\n", $comments);
+
+        return $this->lastBuild = $result;
     }
 
     ////////////////////////////   Interfaces   ////////////////////////////
@@ -373,7 +404,7 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
     }
 
     public function __toString() {
-        return $this->build();
+        return $this->getDocComment();
     }
 
     public function __debugInfo() {
