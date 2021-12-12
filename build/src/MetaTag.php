@@ -6,6 +6,8 @@ namespace NGSOFT\Userscript;
 
 class MetaTag implements \JsonSerializable, \IteratorAggregate, \Stringable {
 
+    use \NGSOFT\Traits\UnionType;
+
     /** @var string */
     private $name;
 
@@ -43,6 +45,16 @@ class MetaTag implements \JsonSerializable, \IteratorAggregate, \Stringable {
     public function getValue(): string {
         $index = array_key_last($this->values);
         return is_int($index) ? $this->values[$index] : '';
+    }
+
+    /**
+     * Overwrite value
+     * @param string $value
+     */
+    public function setValue($value) {
+        $this->checkType($value, 'string', 'array');
+        if (is_string($value)) $this->values = [$value];
+        else $this->values = $value;
     }
 
     /**
