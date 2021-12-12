@@ -1,39 +1,44 @@
 
 
 
-(function(global, root){
-    
-    const {document} = root.gmtools.window;
+(function (global, root) {
 
-    const {GM_Storage} = root.storage;
+    const { document } = root.gmtools.window;
 
-    const {emitter} = root.emitter;
+    const { GM_Storage, xsessionStorage } = root.storage;
 
-    console.debug(emitter);
+    const { emitter } = root.emitter;
 
 
-    emitter.one('t', function(e){
-        console.debug('one', e, this);
-    }).on('t', function(e){
-        console.debug('on', e, this);
+    xsessionStorage.onValueChange('myKey2', (...args) => {
+        console.debug(args);
+    });
 
-    }).trigger('t t t t');
-
-
-
+    xsessionStorage.onValueChange('myKey', (...args) => {
+        console.debug(args);
+    });
 
 
+    xsessionStorage.offValueChange('myKey2', e => e);
+
+    xsessionStorage.set('myKey', 'myNewValue');
 
 
-
-
+    xsessionStorage.set('myKey2', ['myNewValue' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)]);
 
 
 
 
 
 
-    
+
+
+
+
+
+
+
+
 })(typeof unsafeWindow !== 'undefined' ? unsafeWindow : window, typeof self !== 'undefined' ? self : this);
 
 
