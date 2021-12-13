@@ -4,6 +4,8 @@
         "src"
     ],
     "destination": "dist",
+    "basepath": "https://cdn.jsdelivr.net/gh/ngsoft/kodi.user.js",
+    "modulepath": "/lib/modules/",
     "proxy": {
         "description": "Proxy configuration that can be launched using 'npm start'",
         "path": "/proxy/%s",

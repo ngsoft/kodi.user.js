@@ -274,6 +274,7 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         $this->lastBuild = null;
         unset($this->storage[$name]);
         unset($this->properties[$name]);
+        unset($this->custom[$name]);
         return $this;
     }
 

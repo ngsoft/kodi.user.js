@@ -35,9 +35,6 @@
         "storage",
         "nodefinder"
     ],
-    "basepath": "https://cdn.jsdelivr.net/gh/ngsoft/kodi.user.js",
-    "modulepath": "/lib/modules/",
-
     "include": [
         "*"
     ],

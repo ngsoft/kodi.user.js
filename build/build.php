@@ -36,6 +36,12 @@ $config = json_decode(file_get_contents("$root/builder.json"));
 
 $sources = $config->sources;
 $destination = "$root/" . $config->destination;
+$basePath = $config->basepath;
+$modulePath = $config->modulepath;
+if (!str_ends_with($modulePath, '/')) $modulePath .= '/';
+$modulePath = "$root$modulePath";
+
+$today = sprintf('%s.%s.', (string) intval(gmdate('y')), gmdate('m'));
 
 if (!is_dir($destination)) {
     throw new RuntimeException('Destination folder ' . $destination . ' does not exists.');
@@ -61,91 +67,59 @@ foreach ($sources as $dir) {
             printf("Found %s but no userscript %s, ignoring ...\n", $pathName, $fileName->getUserScript());
             continue;
         }
+        $version = '';
+        $rev = 0;
+        $destScript = "$destination/" . $fileName->getUserScript();
+        if (is_file($destScript)) {
+            $tmp = MetaBlock::loadFromFile($destScript);
+
+            var_dump($tmp);
+            $version = $tmp->getProperty('version') ?? '';
+        }
+        exit;
+        if (str_starts_with($version, $today)) {
+            $split = explode(".", $version);
+            $rev = intval($split[2]) + 1;
+        }
+        $version = $today . $rev;
+
         // load metadata
+        printf("Loading metadata for %s\n", $fileName->getName());
         $meta = MetaBlock::loadFromFile($pathName);
+        $require = $meta->getProperty('require') ?? [];
+        $modules = $meta->getProperty('module') ?? [];
+        $meta->removeProperty('module');
+        $meta->setProperty('version', $version);
+        $comment = $meta->getDocComment();
+        $contents = $comment;
+        printf("Compiling new version %s\n", $version);
 
-        if ($basepath = $meta->getCustom('basepath')) {
-            $basepath .= $version;
-            $meta->removeCustom('basepath');
-            $require = $meta->getRequire();
-            foreach ($require as &$res) {
-                if ($res[0] == '/') $res = $basepath . $res;
+        foreach ($modules as $module) {
+            $moduleFile = "$modulePath$module.js";
+            if (!is_file($moduleFile)) {
+                throw new RuntimeException('Cannot find module in ' . $moduleFile);
             }
-            $meta->setRequire($require);
+            $contents .= file_get_contents($moduleFile) . "\n";
         }
+        $contents .= file_get_contents("$dirName/" . $fileName->getUserScript());
 
-        var_dump($meta->getProperty('require'));
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-exit;
-
-foreach (scandir($root) as $file) {
-    if (!str_ends_with($file, '.meta.json')) continue;
-
-    $script = preg_replace('#.meta.json$#', '.user.js', $file);
-    $meta = Metadata::loadMetadata("$root/$file");
-
-    $today = sprintf('%s.%s.', (string) intval(gmdate('y')), gmdate('m'));
-    $version = '';
-    $rev = 0;
-
-    if (is_file("$root/$script")) {
-        $tmp = Metadata::loadUserscript("$root/$script");
-        $version = $tmp->getVersion() ?? '';
-    }
-
-    if (str_starts_with($version, $today)) {
-        $split = explode(".", $version);
-        $rev = intval($split[2]) + 1;
-    }
-    $version = $today . $rev;
-
-    //$meta->setVersion($today . $rev);
-
-    if ($basepath = $meta->getCustom('basepath')) {
-        $basepath .= $version;
-        $meta->removeCustom('basepath');
-
-        $require = $meta->getRequire();
-        foreach ($require as &$res) {
-            if ($res[0] == '/') $res = $basepath . $res;
-        }
-        $meta->setRequire($require);
-    }
-
-
-    //$meta->saveJSON();
-
-    list($script, $metafile) = [preg_replace('#\.meta\.json#', '.user.js', $file), preg_replace('#\.meta\.json#', '.meta.js', $file)];
-    $destScript = "$destination/$script";
-    $found = false;
-    foreach ($sources as $dir) {
-        $path = "$root/$dir/$script";
-        if (is_file($path)) {
+        printf("Saving '%s'\n", $destScript);
+        if (file_put_contents($destScript, $contents) !== false) {
+            printf("Saving '%s/%s'\n", $destination, $fileName->getMetaScript());
+            file_put_contents("$destination/" . $fileName->getMetaScript(), $comment);
             $found = true;
-            printf("Loading %s\n", $path);
-            $contents = file_get_contents($path);
-
-            $contents = (string) $meta . $contents;
-            printf("Saving %s, %s", $script, $metafile);
-            //file_put_contents($destScript, $contents);
-            //$meta->saveMetaFile();
         }
     }
-    if (!$found) throw new RuntimeException('Cannot find script ' . $script);
 }
+
+if (!$found) throw new RuntimeException('Cannot find any script.');
+
+
+
+
+
+
+
 
 
 
