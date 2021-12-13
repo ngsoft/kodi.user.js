@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     21.12.2
+// @version     21.12.7
 // @name        KodiCast
 // @description Cast your streams to Kodi
 // @author      Aymeric Anger

@@ -8,27 +8,14 @@ use JsonSerializable,
     RuntimeException,
     Stringable;
 
-class FileName implements JsonSerializable, Stringable {
-
-    /** @var string */
-    private $name;
+class FileName extends Named implements JsonSerializable, Stringable {
 
     public function __construct(string $name) {
-        $this->setName($name);
-    }
-
-    public function getName(): string {
-        return $this->name;
-    }
-
-    public function setName(string $name) {
         $name = preg_replace('#.(meta|user).js\w*?$#', '', $name);
         if (!preg_match('/[\w\-]+/', $name)) {
             throw new RuntimeException('Invalid name: ' . $name);
         }
-
-        $this->name = $name;
-        return $this;
+        parent::__construct($name);
     }
 
     public function getUserScript(): string {
@@ -60,11 +47,10 @@ class FileName implements JsonSerializable, Stringable {
     }
 
     public function __toString() {
-        return $this->name;
+        return $this->getUserScript();
     }
 
     public function __debugInfo() {
-
         return $this->toArray();
     }
 
