@@ -118,7 +118,7 @@ if (isset($pathinfo) && $method == 'GET') {
                             $meta->removeProperty('module');
 
                             foreach ($modules as $module) {
-                                $require[] = sprintf('%s/%s%s.js?%u', $origin, $modulePath, $module, time());
+                                $require[] = sprintf('%s/%s/%s.js?%u', $origin, $modulePath, $module, time());
                             }
                         }
 
@@ -126,7 +126,7 @@ if (isset($pathinfo) && $method == 'GET') {
                         if (isset($relative)) {
                             $require[] = sprintf('%s%s?%u', $origin, $relative, time());
                         }
-
+                        $meta->setProperty('version', sprintf('%s.%s.dev', (string) intval(gmdate('y')), gmdate('m')));
                         $meta->setProperty('require', $require);
                         $contents = $meta->getDocComment();
 
