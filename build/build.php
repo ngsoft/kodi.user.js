@@ -38,8 +38,8 @@ $sources = $config->sources;
 $destination = "$root/" . $config->destination;
 $basePath = $config->basepath;
 $modulePath = $config->modulepath;
-if (!str_ends_with($modulePath, '/')) $modulePath .= '/';
-$modulePath = "$root$modulePath";
+
+$modulePath = "$root/$modulePath";
 
 $today = sprintf('%s.%s.', (string) intval(gmdate('y')), gmdate('m'));
 
@@ -86,6 +86,8 @@ foreach ($sources as $dir) {
         $meta = MetaBlock::loadFromFile($pathName);
         $require = $meta->getProperty('require') ?? [];
         $modules = $meta->getProperty('module') ?? [];
+        if(is_string($modules)) $modules = [$modules];
+        if(is_bool($modules)) $modules = [];
         $meta->removeProperty('module');
         $meta->setProperty('version', $version);
         $comment = $meta->getDocComment();
@@ -93,7 +95,7 @@ foreach ($sources as $dir) {
         printf("Compiling new version %s\n", $version);
 
         foreach ($modules as $module) {
-            $moduleFile = "$modulePath$module.js";
+            $moduleFile = "$modulePath/$module.js";
             if (!is_file($moduleFile)) {
                 throw new RuntimeException('Cannot find module in ' . $moduleFile);
             }
