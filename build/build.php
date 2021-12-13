@@ -73,7 +73,6 @@ foreach ($sources as $dir) {
         if (is_file($destScript)) {
             $tmp = MetaBlock::loadFromFile($destScript);
 
-            var_dump($tmp);
             $version = $tmp->getProperty('version') ?? '';
         }
         exit;

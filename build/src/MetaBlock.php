@@ -319,6 +319,27 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
 
     private function parseHeaders(string $jsCode) {
 
+        if ($block = self::RE_BLOCK()->exec($jsCode)) {
+
+            $data = [];
+
+            while ($matches = self::RE_PROP()->exec($block[1])) {
+                list(, $tag, $value) = $matches;
+
+                $data[$tag] = $data[$tag] ?? [];
+
+                if (!self::isUnique($tag)) {
+                    if ($matches = self::RE_KEY_VALUE()->exec($value)) {
+                        list(, $prop, $value) = $matches;
+                        $data[$tag][$prop] = $value;
+                    } else $data[$tag][] = $value;
+                } else $data[$tag] = $value;
+            }
+
+            foreach ($data as $tag => $value) {
+                $this->addProperty($tag, $value);
+            }
+        } else throw new RuntimeException(sprintf('No header block for userscript %s', $this->fileName->getName()));
     }
 
     ////////////////////////////   Builder   ////////////////////////////
