@@ -8,19 +8,11 @@
 
 
 
-    storage.xsessionStorage.onValueChange('key', console.debug);
-
-
-
-
-
-
-    storage.xsessionStorage.set('key', 'fdfmldm').then(() => {
-        //storage.GM_Storage.offValueChange('key');
-        storage.xsessionStorage.set('key2', 'fdfmldm');
-        storage.xsessionStorage.set('key', 'dsdsdsd');
+    finder.findOne('div').then(node => {
+        console.debug(node);
+        finder(node).find('div', console.debug);
+        //request.abort();
     });
-
 
 
 
