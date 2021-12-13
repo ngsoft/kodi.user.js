@@ -8,9 +8,6 @@
 
 
 
-    nodefinder.finder.find('img', console.debug);
-    nodefinder.finder.findOne('div').then(console.debug);
-
 
 
 
