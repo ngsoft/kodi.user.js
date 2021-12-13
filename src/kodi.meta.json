@@ -33,7 +33,7 @@
         "gmtools",
         "emitter",
         "storage",
-        "nodefinder"
+        "finder"
     ],
     "include": [
         "*"
