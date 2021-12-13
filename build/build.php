@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use NGSOFT\{
-    Tools, Userscript\FileName, Userscript\MetaBlock, Userscript\Metadata
+    Tools, Userscript\FileName, Userscript\MetaBlock
 };
 use function GuzzleHttp\json_decode;
 
@@ -72,7 +72,6 @@ foreach ($sources as $dir) {
         $destScript = "$destination/" . $fileName->getUserScript();
         if (is_file($destScript)) {
             $tmp = MetaBlock::loadFromFile($destScript);
-
             $version = $tmp->getProperty('version') ?? '';
         }
 
