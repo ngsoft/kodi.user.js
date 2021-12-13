@@ -75,7 +75,7 @@ foreach ($sources as $dir) {
 
             $version = $tmp->getProperty('version') ?? '';
         }
-        exit;
+
         if (str_starts_with($version, $today)) {
             $split = explode(".", $version);
             $rev = intval($split[2]) + 1;
