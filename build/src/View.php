@@ -11,7 +11,15 @@ use GuzzleHttp\Psr7\HttpFactory,
 
 class View {
 
-    protected $data = [];
+    protected static $data = [];
+
+    public static function set(string $key, $value) {
+        static::$data[$key] = $value;
+    }
+
+    public static function get(string $key) {
+        return static::$data[$key] ?? null;
+    }
 
     /** @var HttpFactory */
     protected $factory;
@@ -28,7 +36,7 @@ class View {
         }
         $response = $this->factory->createResponse();
 
-        $data = array_replace($this->data, $data);
+        $data = array_replace(static::$data, $data);
 
         ob_start();
         Tools::pushd(dirname($fname));
