@@ -405,6 +405,27 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         return $this->lastBuild = $result;
     }
 
+    ////////////////////////////   Magic methods   ////////////////////////////
+
+
+
+    public function __get($name) {
+
+        return $this->getProperty($name);
+    }
+
+    public function __isset($name) {
+        return $this->offsetExists($name);
+    }
+
+    public function __unset($name) {
+        $this->removeProperty($name);
+    }
+
+    public function __set($name, $value) {
+        $this->addProperty($name, $value);
+    }
+
     ////////////////////////////   Interfaces   ////////////////////////////
 
 

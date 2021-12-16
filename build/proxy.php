@@ -7,7 +7,7 @@ use GuzzleHttp\Psr7\{
 };
 use Mimey\MimeTypes;
 use NGSOFT\{
-    Tools, Userscript\FileName, Userscript\MetaBlock, Userscript\ResponseEmitter
+    Tools, Userscript\FileName, Userscript\MetaBlock, Userscript\ResponseEmitter, Userscript\View
 };
 use Psr\Http\Message\ResponseInterface;
 use function GuzzleHttp\{
@@ -52,6 +52,9 @@ while (!is_file("$root/builder.json")) {
 }
 
 $config = json_decode(file_get_contents("$root/builder.json"));
+$package = json_decode(file_get_contents("$root/package.json"));
+View::set('config', $config);
+View::set('package', $package);
 $sources = $config->sources;
 $modulePath = $config->modulepath;
 
@@ -84,6 +87,37 @@ if (isset($pathinfo) && $method == 'GET') {
     }
 
     if ($route == 'home') {
+
+        $scripts = [];
+
+        foreach ($sources as $dir) {
+
+            $path = "$root/$dir";
+            if (!is_dir($path)) {
+                throw new RuntimeException('Directory ' . $path . ' does not exists.');
+            }
+
+            /** @var SplFileInfo $fileObj */
+            foreach (Tools::getRecursiveDirectoryIterator($path, '.json') as $fileObj) {
+
+                if (!$fileObj->isFile()) continue;
+                if (!str_ends_with($fileObj->getFilename(), '.meta.json')) continue;
+                $fileName = new FileName($fileObj->getFilename());
+                $pathName = $fileObj->getPathname();
+                $dirName = dirname($fileObj->getPathname());
+                if (!is_file($dirName . DIRECTORY_SEPARATOR . $fileName->getUserScript())) {
+                    continue;
+                }
+
+                $meta = MetaBlock::loadFromFile($pathName);
+                $scripts[$fileName->getName()] = $meta;
+            }
+        }
+
+
+        $view = new View();
+        render($view->render('home.php', ['scripts' => $scripts]));
+
         header(sprintf('Location: %s', $config->proxy->home));
         exit;
     } elseif ($route == 'file') {

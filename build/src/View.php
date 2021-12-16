@@ -44,7 +44,7 @@ class View {
         $contents = ob_get_clean();
         Tools::popd();
 
-        return $response;
+        return $response->withBody($this->factory->createStream($contents));
     }
 
 }
