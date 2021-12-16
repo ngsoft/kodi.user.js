@@ -4,19 +4,41 @@
 
 (function (global, root) {
 
-    const { document } = global;
+    const {document} = global;
+
+    const {xsessionStorage, GM_Storage} = storage;
+
+
+    /*
+
+    xsessionStorage.onValueChange('myKey', console.debug);
 
 
 
-    console.debug(gmtools);
+    xsessionStorage.set('kdlfkd', true).then(console.debug);
 
-  
-    
+    xsessionStorage.set('myKey', true);
 
-    runat.documentEnd().then(a => console.debug('end', a));
-    runat.documentIdle().then(a => console.debug('idle', a));
-runat.documentBody().then(a => console.debug('body', a));
-  runat.documentStart().then(a => console.debug('start', a));
+    xsessionStorage.set('myKey', false);
+
+    xsessionStorage.offValueChange('myKey');
+
+    xsessionStorage.set('myKey', {obj: 'djfkd'});
+*/
+
+
+    GM_Storage.onValueChange('myKey', console.debug);
+
+
+
+    GM_Storage.set('kdlfkd', true).then(console.debug);
+
+    GM_Storage.set('myKey', true);
+
+    GM_Storage.set('myKey', false);
+
+    GM_Storage.set('myKey', {obj: 'djfkd'});
+
 
 
 
