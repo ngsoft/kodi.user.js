@@ -4,18 +4,11 @@
 
 (function (global, root) {
 
-    const {document} = global;
+    const { document } = global;
 
 
 
-    finder.findOne('div').then(node => {
-        console.debug(node);
-        finder(node).find('div', console.debug);
-        //request.abort();
-    });
-
-
-
+    console.debug(gmtools);
 
 
 

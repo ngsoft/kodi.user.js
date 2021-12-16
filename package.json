@@ -1,12 +1,18 @@
 {
     "name": "kodi.user.js",
     "version": "1.0.0",
-    "keywords": ["util", "functional", "server", "client", "browser"],
+    "keywords": [
+        "util",
+        "functional",
+        "server",
+        "client",
+        "browser"
+    ],
     "author": "daedelus",
     "contributors": [],
     "dependencies": {},
     "scripts": {
-        "start": "php -S 127.0.0.1:56789 ./index.php"
-
+        "start": "php -S 127.0.0.1:56789 ./index.php",
+        "build": "php ./build/build.php"
     }
 }

@@ -133,7 +133,7 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
 
     private static function RE_PROP(): RegExp {
         static $re;
-        $re = $re ?? RegExp::create('[\/]{2,}[ \t]*@([\w\-]+)[ \t]*(.*)\n*', 'g');
+        $re = $re ?? RegExp::create('[\/]{2,}[ \t]*@([\w\-\:]+)[ \t]*(.*)\n*', 'g');
         return $re;
     }
 
