@@ -73,7 +73,7 @@ if (isset($pathinfo) && $method == 'GET') {
     $response = $factory->createResponse();
     foreach ($config->proxy->headers as $name => $value) $response = $response->withHeader($name, $value);
 
-    if ($pathinfo == '/index.php' || $pathinfo == '/') {
+    if ($pathinfo == '/index.php' || $pathinfo == '/' || $pathinfo == '/home') {
         $route = 'home';
     } elseif (preg_match(sprintf('#^%s([\w]+.(?:user|meta).js(?:on)?)#', $config->proxy->path), $pathinfo, $matches)) {
         $route = 'proxy';
@@ -117,9 +117,6 @@ if (isset($pathinfo) && $method == 'GET') {
 
         $view = new View();
         render($view->render('home.php', ['scripts' => $scripts]));
-
-        header(sprintf('Location: %s', $config->proxy->home));
-        exit;
     } elseif ($route == 'file') {
         render(setContentType($response, $mimes->getMimeType(pathinfo($param, PATHINFO_EXTENSION)))
                         ->withBody($factory->createStreamFromFile($param)));
