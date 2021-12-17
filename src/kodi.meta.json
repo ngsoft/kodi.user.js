@@ -25,8 +25,7 @@
     },
     "require": [
         "https://cdn.jsdelivr.net/gh/mathiasbynens/utf8.js/utf8.js",
-        "https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.js",
-        "https://cdn.jsdelivr.net/gh/mitchellmebane/GM_fetch@master/GM_fetch.js"
+        "https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.js"
     ],
     "module": [
         "gmtools",
