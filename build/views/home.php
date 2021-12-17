@@ -30,7 +30,7 @@
                             <?= $item->name ?>
                         </td>
                         <td data-label="Description"><?= $item->description ?></td>
-                        <td data-label="Link"><a href="<?= $config->proxy->path . $item->getFileName()->getUserScript() ?>"><span class="icon-link"></span>Link</a></td>
+                        <td data-label="Link"><a target="_blank" href="<?= $config->proxy->path . $item->getFileName()->getUserScript() ?>"><span class="icon-link"></span>Link</a></td>
                     </tr>
                 <?php endforeach; ?>
 

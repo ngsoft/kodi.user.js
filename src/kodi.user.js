@@ -19,10 +19,13 @@
         dfkdlfd: [1, 2, 3, 4],
         myKey: {mcllm: true, lmdlf: [5, 6, 7, 8], lmdlf: null, kklfm: 5562},
         kklfm: 5562
+    }).then(()=>{
+        xsessionStorage.clear().then(() => {
+            console.debug(xsessionStorage.storage);
+        });
     });
 
 
-    xsessionStorage.clear();
 
 
     //xsessionStorage.set('kdlfkd', true).then(console.debug);
