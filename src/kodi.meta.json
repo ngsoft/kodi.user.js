@@ -33,7 +33,8 @@
         "runat",
         "emitter",
         "storage",
-        "finder"
+        "finder",
+        "gmfetch"
     ],
     "include": [
         "*"
