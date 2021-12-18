@@ -29,7 +29,8 @@
     ],
     "module": [
 
-        "notify"
+        "notify",
+        "jsonrpc"
     ],
     "include": [
         "*"
