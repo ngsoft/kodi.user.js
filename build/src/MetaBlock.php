@@ -11,10 +11,12 @@ use ArrayAccess,
 use NGSOFT\{
     RegExp, Traits\ArrayAccessCountable, Traits\UnionType
 };
-use RuntimeException,
+use OutOfRangeException,
+    RuntimeException,
     Stringable;
 use function json_decode,
              json_encode,
+             str_contains,
              str_ends_with;
 
 /**
@@ -426,6 +428,24 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
 
     ////////////////////////////   Interfaces   ////////////////////////////
 
+    /** {@inheritdoc} */
+    public function &offsetGet($offset) {
+
+        if ($offset === null || is_int($offset)) {
+            throw new OutOfRangeException();
+        }
+        $value = $this->storage[$name] ?? null;
+        return $value;
+    }
+
+    /** {@inheritdoc} */
+    public function offsetSet($offset, $value) {
+        if ($offset === null || is_int($offset)) {
+            throw new OutOfRangeException();
+        }
+
+        $this->storage[$offset] = $value;
+    }
 
     public function getIterator() {
         foreach ($this->storage as $item) {
