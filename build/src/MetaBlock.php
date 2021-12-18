@@ -175,7 +175,6 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         }
 
         $file = basename($filename);
-        $dirName = dirname($filename);
         $extensions = implode('|', [self::EXT_JSON, self::EXT_META, self::EXT_USERSCRIPT]);
         if (!preg_match(sprintf('#(%s)$#', $extensions), $file)) {
             throw new RuntimeException('Cannot import ' . $file . ' invalid extension(' . $extensions . ').');
@@ -373,7 +372,6 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
 
         $comments = '';
 
-        $maxLen = $this->maxLength;
         foreach ($this->getFormatIterator() as list($tag, $value, $index)) {
             $comment = '//';
             if (empty($tag)) {

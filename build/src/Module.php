@@ -43,17 +43,17 @@ class Module extends Named implements \IteratorAggregate, \Stringable {
     /**
      * Add a module to the stack
      *
-     * @param string $filename
+     * @param string $fileName
      * @return static
      * @throws RuntimeException
      */
-    public static function addModule(string $filename) {
+    public static function addModule(string $fileName) {
         if (!is_file($fileName)) {
             throw new RuntimeException(sprintf('Invalid file %s', $fileName));
         }
         $name = preg_replace('/\.js$/i', '', basename($fileName));
         if (isset(self::$_loadedModules[$name])) return self::$_loadedModules[$name];
-        return new static($filename);
+        return new static($fileName);
     }
 
     ////////////////////////////   api   ////////////////////////////
@@ -78,12 +78,11 @@ class Module extends Named implements \IteratorAggregate, \Stringable {
         /** @var RegExp $re */
         static $re;
         $re = $re ?? new RegExp('deps\h*=\h*(\[.*\])');
-        $this->lastBuild = null;
         $deps = &$this->deps;
         $contents = &$this->contents;
 
         if ($matches = $re->exec($contents)) {
-            $json = str_replace("'", '"', $json);
+            $json = str_replace("'", '"', $matches[1]);
             $arr = \json_decode($json, true);
             if (\JSON_ERROR_NONE !== \json_last_error()) {
                 throw new RuntimeException('json_decode error: ' . \json_last_error_msg());

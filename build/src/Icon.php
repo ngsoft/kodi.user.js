@@ -68,7 +68,7 @@ class Icon extends Named implements Stringable, JsonSerializable, \IteratorAggre
             $path = preg_split('/[\/]+/', $uri->getPath());
             $basename = array_pop($path);
 
-            if ($matches = $re->exec($str)) {
+            if ($matches = $re->exec($basename)) {
                 return $matches[1];
             }
         }
@@ -80,12 +80,7 @@ class Icon extends Named implements Stringable, JsonSerializable, \IteratorAggre
         if (preg_match('/;base64,/', $this->url)) return $this->url;
         elseif (isset($this->b64URL)) return $this->b64URL;
         elseif ($this->convert and $this->isHTTP($this->url)) {
-
-
-
             $mimey = new MimeTypes();
-
-            $fname = '';
 
             if ($mime = $mimey->getMimeType(pathinfo($this->url, PATHINFO_EXTENSION))) {
                 $client = new Client();
