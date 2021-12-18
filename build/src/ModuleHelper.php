@@ -28,8 +28,13 @@ class ModuleHelper implements IteratorAggregate {
     private function sortModules() {
         $sorted = &$this->sorted;
         $sorted = [];
-        foreach ($this->modules as $name => $module) {
-
+        $loaded = [];
+        foreach ($this->modules as $mod) {
+            foreach ($mod as $name => $module) {
+                if (isset($loaded[$name])) continue;
+                $loaded[$name] = $name;
+                $sorted[] = $module;
+            }
         }
     }
 
@@ -37,9 +42,9 @@ class ModuleHelper implements IteratorAggregate {
      * @return \Generator<string,Module>
      */
     public function getIterator() {
-
-        foreach ($this->sorted as $name) {
-            yield $name => $this->modules[$name];
+        $this->sortModules();
+        foreach ($this->sorted as $module) {
+            yield $module->getName() => $module;
         }
     }
 
