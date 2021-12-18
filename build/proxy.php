@@ -7,7 +7,7 @@ use GuzzleHttp\Psr7\{
 };
 use Mimey\MimeTypes;
 use NGSOFT\{
-    Tools, Userscript\FileName, Userscript\MetaBlock, Userscript\ResponseEmitter, Userscript\View
+    Tools, Userscript\FileName, Userscript\MetaBlock, Userscript\ModuleHelper, Userscript\ResponseEmitter, Userscript\View
 };
 use Psr\Http\Message\ResponseInterface;
 use function GuzzleHttp\{
@@ -148,8 +148,16 @@ if (isset($pathinfo) && $method == 'GET') {
                             if (is_bool($modules)) $modules = [];
                             $meta->removeProperty('module');
 
+                            $helper = new ModuleHelper();
+
                             foreach ($modules as $module) {
-                                $require[] = sprintf('%s/%s/%s.js?%u', $origin, $modulePath, $module, time());
+                                //deps
+                                $modFileName = $root . DIRECTORY_SEPARATOR . $modulePath . DIRECTORY_SEPARATOR . $module . '.js';
+                                $helper->addModule($modFileName);
+                            }
+
+                            foreach ($helper->toArray() as $module) {
+                                $require[] = sprintf('%s/%s/%s.js?%u', $origin, $modulePath, $module->getName(), time());
                             }
                         }
 

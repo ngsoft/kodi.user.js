@@ -38,6 +38,10 @@ class ModuleHelper implements IteratorAggregate {
         return $instance;
     }
 
+    /**
+     *
+     * @return Module[]
+     */
     public function toArray(): array {
         return $this->sorted;
     }
