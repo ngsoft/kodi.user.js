@@ -69,6 +69,15 @@ class Module extends Named implements \IteratorAggregate, \Stringable {
         return static::addModule($filename);
     }
 
+    /**
+     * Get file contents
+     * @param bool $minify
+     * @return string
+     */
+    public function getCode(bool $minify = false): string {
+        return $minify ? ModuleHelper::minifyCode($this->contents) : $this->contents;
+    }
+
     ////////////////////////////   Parsers   ////////////////////////////
 
     /**

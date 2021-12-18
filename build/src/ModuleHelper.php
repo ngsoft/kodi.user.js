@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace NGSOFT\Userscript;
 
 use IteratorAggregate,
-    MatthiasMullie\Minify\JS;
+    JShrink\Minifier;
 
 class ModuleHelper implements IteratorAggregate {
 
@@ -19,9 +19,7 @@ class ModuleHelper implements IteratorAggregate {
     private $lastBuild = '';
 
     public static function minifyCode(string $code) {
-        $mini = new JS();
-        $mini->add($code);
-        return $mini->minify();
+        return Minifier::minify($code);
     }
 
     ////////////////////////////   API   ////////////////////////////
@@ -46,13 +44,9 @@ class ModuleHelper implements IteratorAggregate {
         return $this->sorted;
     }
 
-    public function getCode(): string {
-
-        return $this->build();
-    }
-
-    public function getMinifiedCode(): string {
-        return static::minifyCode($this->build());
+    public function getCode(bool $minify = false): string {
+        $code = $this->build();
+        return $minify ? static::minifyCode($code) : $code;
     }
 
     ////////////////////////////   Utils   ////////////////////////////

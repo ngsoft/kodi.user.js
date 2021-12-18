@@ -97,15 +97,8 @@ foreach ($sources as $dir) {
         $helper = new ModuleHelper();
 
         foreach ($modules as $moduleName) {
-
             $moduleFile = "$modulePath/$moduleName.js";
-
             $helper->addModule($moduleFile);
-
-            /*  if (!is_file($moduleFile)) {
-              throw new RuntimeException('Cannot find module in ' . $moduleFile);
-              }
-              $contents .= file_get_contents($moduleFile) . "\n"; */
         }
         $contents .= $helper->getCode();
         $contents .= file_get_contents("$dirName/" . $fileName->getUserScript());
