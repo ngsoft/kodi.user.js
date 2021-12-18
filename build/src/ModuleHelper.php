@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace NGSOFT\Userscript;
 
-use IteratorAggregate;
+use IteratorAggregate,
+    MatthiasMullie\Minify\JS;
 
 class ModuleHelper implements IteratorAggregate {
 
@@ -16,6 +17,12 @@ class ModuleHelper implements IteratorAggregate {
 
     /** @var string */
     private $lastBuild = '';
+
+    public static function minifyCode(string $code) {
+        $mini = new JS();
+        $mini->add($code);
+        return $mini->minify();
+    }
 
     ////////////////////////////   API   ////////////////////////////
 
@@ -29,6 +36,19 @@ class ModuleHelper implements IteratorAggregate {
         $this->modules[$instance->getName()] = $instance;
         $this->sortModules();
         return $instance;
+    }
+
+    public function toArray(): array {
+        return $this->sorted;
+    }
+
+    public function getCode(): string {
+
+        return $this->build();
+    }
+
+    public function getMinifiedCode(): string {
+        return static::minifyCode($this->build());
     }
 
     ////////////////////////////   Utils   ////////////////////////////
@@ -53,6 +73,7 @@ class ModuleHelper implements IteratorAggregate {
         $result = '';
         foreach ($this->getIterator() as $module) {
             $result .= (string) $module;
+            $result .= "\n";
         }
         return $this->lastBuild = $result;
     }

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use NGSOFT\{
-    Tools, Userscript\FileName, Userscript\MetaBlock
+    Tools, Userscript\FileName, Userscript\MetaBlock, Userscript\ModuleHelper
 };
 use function GuzzleHttp\json_decode;
 
@@ -86,27 +86,39 @@ foreach ($sources as $dir) {
         $meta = MetaBlock::loadFromFile($pathName);
         $require = $meta->getProperty('require') ?? [];
         $modules = $meta->getProperty('module') ?? [];
-        if(is_string($modules)) $modules = [$modules];
-        if(is_bool($modules)) $modules = [];
+        if (is_string($modules)) $modules = [$modules];
+        if (is_bool($modules)) $modules = [];
         $meta->removeProperty('module');
         $meta->setProperty('version', $version);
         $comment = $meta->getDocComment();
         $contents = $comment;
         printf("Compiling new version %s\n", $version);
 
-        foreach ($modules as $module) {
-            $moduleFile = "$modulePath/$module.js";
-            if (!is_file($moduleFile)) {
-                throw new RuntimeException('Cannot find module in ' . $moduleFile);
-            }
-            $contents .= file_get_contents($moduleFile) . "\n";
-        }
-        $contents .= file_get_contents("$dirName/" . $fileName->getUserScript());
+        $helper = new ModuleHelper();
 
+        foreach ($modules as $moduleName) {
+
+            $moduleFile = "$modulePath/$moduleName.js";
+
+            $helper->addModule($moduleFile);
+
+            /*  if (!is_file($moduleFile)) {
+              throw new RuntimeException('Cannot find module in ' . $moduleFile);
+              }
+              $contents .= file_get_contents($moduleFile) . "\n"; */
+        }
+        $contents .= $helper->getCode();
+        $contents .= file_get_contents("$dirName/" . $fileName->getUserScript());
         printf("Saving '%s'\n", $destScript);
         if (file_put_contents($destScript, $contents) !== false) {
             printf("Saving '%s/%s'\n", $destination, $fileName->getMetaScript());
-            file_put_contents("$destination/" . $fileName->getMetaScript(), $comment);
+            file_put_contents($destination . DIRECTORY_SEPARATOR . $fileName->getMetaScript(), $comment);
+            $minFile = $fileName->getName() . '.min.user.js';
+            $minMeta = $fileName->getName() . '.min.meta.js';
+            printf("Saving '%s/%s'\n", $destination, $minFile);
+            file_put_contents($destination . DIRECTORY_SEPARATOR . $minFile, $comment . ModuleHelper::minifyCode($contents));
+            printf("Saving '%s/%s'\n", $destination, $minMeta);
+            file_put_contents($destination . DIRECTORY_SEPARATOR . $minMeta, $comment);
             $found = true;
         }
     }

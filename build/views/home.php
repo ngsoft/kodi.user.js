@@ -11,14 +11,15 @@
         <header>
             <a href="/" class="logo"><?= $package->name ?></a>
         </header>
-        <div class="container">
-            <table class="hoverable striped" style="overflow: inherit;">
+        <div class="container" style="padding: .75rem;">
+            <table class="hoverable" style="overflow: inherit;">
                 <caption>Scripts</caption>
                 <thead>
                     <tr>
                         <th>Name</th>
                         <th>Description</th>
-                        <th>Link</th>
+                        <th>Proxy</th>
+                        <th>Build</th>
                     </tr>
                 </thead>
                 <?php foreach ($scripts as $item): ?>
@@ -30,9 +31,15 @@
                             <?= $item->name ?>
                         </td>
                         <td data-label="Description"><?= $item->description ?></td>
-                        <td data-label="Link">
+                        <td data-label="Proxy">
                             <a target="_blank" href="<?= $config->proxy->path . $item->getFileName()->getUserScript() ?>">
-                                <?= $item->getFileName()->getUserScript() ?>
+                                <?= $config->proxy->path . $item->getFileName()->getUserScript() ?>
+                                <span class="icon-link"></span>
+                            </a>
+                        </td>
+                        <td data-label="Proxy">
+                            <a target="_blank" href="/<?= $config->destination ?>/<?= $item->getFileName()->getUserScript() ?>">
+                                /<?= $config->destination ?>/<?= $item->getFileName()->getUserScript() ?>
                                 <span class="icon-link"></span>
                             </a>
                         </td>
@@ -45,7 +52,7 @@
 
 
         <footer>
-            <p>&COPY; 2021 NGSOFT</p>
+            <p style="text-align: center;">&COPY; <?= gmdate('Y') ?> NGSOFT</p>
         </footer>
     </body>
 </html>
