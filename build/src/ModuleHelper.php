@@ -14,6 +14,11 @@ class ModuleHelper implements IteratorAggregate {
     /** @var string[] */
     private $sorted = [];
 
+    /** @var string */
+    private $lastBuild = '';
+
+    ////////////////////////////   API   ////////////////////////////
+
     /**
      * Add a module to the stack
      * @param string $fileName
@@ -22,10 +27,15 @@ class ModuleHelper implements IteratorAggregate {
     public function addModule(string $fileName) {
         $instance = new Module($fileName);
         $this->modules[$instance->getName()] = $instance;
+        $this->sortModules();
         return $instance;
     }
 
+    ////////////////////////////   Utils   ////////////////////////////
+
+
     private function sortModules() {
+        $this->lastBuild = '';
         $sorted = &$this->sorted;
         $sorted = [];
         $loaded = [];
@@ -38,14 +48,28 @@ class ModuleHelper implements IteratorAggregate {
         }
     }
 
+    private function build(): string {
+        if (!empty($this->lastBuild)) return $this->lastBuild;
+        $result = '';
+        foreach ($this->getIterator() as $module) {
+            $result .= (string) $module;
+        }
+        return $this->lastBuild = $result;
+    }
+
+    ////////////////////////////   Interfaces   ////////////////////////////
+
     /**
      * @return \Generator<string,Module>
      */
     public function getIterator() {
-        $this->sortModules();
         foreach ($this->sorted as $module) {
             yield $module->getName() => $module;
         }
+    }
+
+    public function __toString() {
+        return $this->build();
     }
 
 }

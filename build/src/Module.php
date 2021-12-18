@@ -7,7 +7,7 @@ namespace NGSOFT\Userscript;
 use NGSOFT\RegExp,
     RuntimeException;
 
-class Module extends Named implements \IteratorAggregate {
+class Module extends Named implements \IteratorAggregate, \Stringable {
 
     /** @var array<string,Module> */
     private static $_loadedModules = [];
@@ -23,9 +23,6 @@ class Module extends Named implements \IteratorAggregate {
 
     /** @var string */
     private $contents;
-
-    /** @var ?string */
-    private $lastBuild = null;
 
     public function __construct(string $fileName) {
 
@@ -111,6 +108,11 @@ class Module extends Named implements \IteratorAggregate {
         }
 
         yield $this->name => $this;
+    }
+
+    /** {@inheritdoc} */
+    public function __toString() {
+        return $this->contents;
     }
 
     ////////////////////////////   Magic methods   ////////////////////////////
