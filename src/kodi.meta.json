@@ -17,6 +17,7 @@
         "GM_registerMenuCommand",
         "GM_unregisterMenuCommand",
         "GM_getResourceText",
+        "GM_getResourceURL",
         "GM_addStyle",
         "GM_setClipboard"
     ],
@@ -33,7 +34,8 @@
         "emitter",
         "storage",
         "finder",
-        "gmfetch"
+        "gmfetch",
+        "notify"
     ],
     "include": [
         "*"
