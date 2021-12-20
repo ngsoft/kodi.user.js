@@ -1,9 +1,9 @@
 .*
 !.gitignore
+!.jshintrc
 !.ht*
 !composer.json
 *.lock
-
 /nbproject/*/
 
 
