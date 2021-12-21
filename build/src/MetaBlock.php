@@ -331,6 +331,17 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         return in_array($prop, self::UNIQUE_TAGS);
     }
 
+    private function checkIfIconHasBeenChanged(): bool {
+        $changed = false;
+        foreach ($this->storage as $value) {
+            if ($value instanceof Icon && $value->getChanged()) {
+                $this->changed = true;
+                break;
+            }
+        }
+        return $changed;
+    }
+
     private function parseJson(string $json) {
         $this->storage = $this->properties = $this->custom = [];
         if ($data = json_decode($json, true)) {
@@ -338,13 +349,8 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
                 $this->addProperty($tag, $value);
             }
         }
-        $this->changed = false;
-        foreach ($this->storage as $value) {
-            if ($value instanceof Icon && $value->getChanged()) {
-                $this->changed = true;
-                break;
-            }
-        }
+
+        $this->changed = $this->checkIfIconHasBeenChanged();
     }
 
     private function parseHeaders(string $jsCode) {
@@ -371,7 +377,8 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
             foreach ($data as $tag => $value) {
                 $this->addProperty($tag, $value);
             }
-            $this->changed = false;
+
+            $this->changed = $this->checkIfIconHasBeenChanged();
         } else throw new RuntimeException(sprintf('No header block for userscript %s', $this->fileName->getName()));
     }
 
