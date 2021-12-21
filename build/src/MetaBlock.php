@@ -335,7 +335,7 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         $changed = false;
         foreach ($this->storage as $value) {
             if ($value instanceof Icon && $value->getChanged()) {
-                $this->changed = true;
+                $changed = true;
                 break;
             }
         }
