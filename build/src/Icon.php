@@ -65,7 +65,7 @@ class Icon extends Named implements Stringable, JsonSerializable, \IteratorAggre
     public function getFilename(): ?string {
 
         static $re;
-        $re = $re ?? $re = new RegExp('\.(\w+)$');
+        $re = $re ?? $re = new RegExp('\.(\w+)(?:[\?\#].*)?$');
 
         if ($this->isHTTP($this->url)) {
             $uri = $this->httpFactory->createUri($this->url);
@@ -86,7 +86,9 @@ class Icon extends Named implements Stringable, JsonSerializable, \IteratorAggre
         elseif ($this->convert and $this->isHTTP($this->url)) {
             $mimey = new MimeTypes();
 
-            if ($mime = $mimey->getMimeType(pathinfo($this->url, PATHINFO_EXTENSION))) {
+            $clean = RegExp::create('(?:[\?\#].*)?$')->replace($this->url, '');
+
+            if ($mime = $mimey->getMimeType(pathinfo($clean, PATHINFO_EXTENSION))) {
                 $client = new Client();
                 try {
                     $response = $client->request('GET', $this->url);
