@@ -43,20 +43,24 @@ class JSON {
         return $data;
     }
 
-    static function stringify($value, callable $replacer = null) {
+    /**
+     * The JSON.stringify() method converts a value to a JSON string
+     *
+     * @param mixed $value
+     * @return string
+     */
+    static function stringify($value): string {
+        return self::encode($value);
+    }
 
-
-        if (is_callable($replacer)) {
-            $result = call_user_func_array($replacer, ['', $value]);
-            if ($result === void) return;
-            if (is_array($value)) {
-                foreach ($value as $key => $val) {
-                    $result = call_user_func_array($replacer, [$key, $val]);
-                    if ($result === null) unset($value[$key]);
-                    else $value[$key] = $result;
-                }
-            }
-        }
+    /**
+     * Parses a JSON string
+     * 
+     * @param string $json
+     * @return mixed
+     */
+    static function parse(string $json) {
+        return self::decode($json, true);
     }
 
 }
