@@ -29,7 +29,8 @@
     ],
     "module": [
         "notify",
-        "kodi"
+        "kodi",
+        "gmconfig"
     ],
     "include": [
         "*"

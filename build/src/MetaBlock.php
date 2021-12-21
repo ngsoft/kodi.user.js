@@ -235,6 +235,7 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
      * @param string|array|bool $value
      */
     public function addProperty(string $name, $value) {
+
         $this->checkType($value, 'string', 'array', 'bool');
 
         $this->storage[$name] = $this->storage[$name] ?? new MetaTag($name);
@@ -455,9 +456,16 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         }
     }
 
-    public function toJson(int $options = null) {
+    /**
+     * Configured json_encode
+     *
+     * @param int $options JSON_{OPTIONS}
+     * @param ?string $filename if set will save json to file
+     * @return string
+     */
+    public function toJson(int $options = null, string $filename = null): string {
         if (is_null($options)) $options = JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES;
-        return json_encode($this, $options);
+        $json = json_encode($this, $options);
     }
 
     public function jsonSerialize() {
@@ -474,6 +482,20 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
             'fileName' => $this->fileName,
             'data' => $this->storage
         ];
+    }
+
+    public function __clone() {
+
+        $this->fileName = clone $this->fileName;
+
+        $orig = $this->storage;
+        $result = [];
+
+        foreach ($orig as $prop => $value) {
+            if (!is_object($value)) $result[$prop] = $value;
+            else $result[$prop] = clone($value);
+        }
+        $this->storage = $result;
     }
 
     private function __construct() {
