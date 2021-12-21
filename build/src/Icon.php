@@ -42,6 +42,10 @@ class Icon extends Named implements Stringable, JsonSerializable, \IteratorAggre
             }
         } else throw new RuntimeException('Invalid URL.');
         $this->convert = $convert;
+
+        if ($convert && !$this->b64URL) {
+            $this->getBase64URL();
+        }
     }
 
     private function isHTTP(string $url): bool {

@@ -92,6 +92,9 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
     /** @var string[] */
     private $custom = [];
 
+    /** @var bool */
+    private $changed = false;
+
     /**
      * @return FileName
      */
@@ -221,6 +224,7 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
             $item = new Icon($name, $value, true);
         } else $item->setValue($value);
         $this->lastBuild = null;
+        $this->changed = true;
         $len = strlen($name);
         if ($len > $this->maxLength) $this->maxLength = $len;
         $this->properties[$name] = $name;
@@ -260,6 +264,7 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         }
 
         $this->lastBuild = null;
+        $this->changed = true;
         $len = strlen($name);
         if ($len > $this->maxLength) $this->maxLength = $len;
         $this->properties[$name] = $name;
@@ -277,6 +282,7 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         unset($this->storage[$name]);
         unset($this->properties[$name]);
         unset($this->custom[$name]);
+        $this->changed = true;
         return $this;
     }
 
@@ -295,11 +301,18 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         return $value;
     }
 
+    /**
+     * Checks if changes have been mades
+     * @return bool
+     */
+    public function getChanged(): bool {
+        return $this->changed;
+    }
+
     ////////////////////////////   Parser   ////////////////////////////
 
 
     public static function isBuiltin(string $name): bool {
-
         return self::RE_BUILTIN()->test($name);
     }
 
@@ -317,6 +330,8 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
                 $this->addProperty($tag, $value);
             }
         }
+
+        $this->changed = false;
     }
 
     private function parseHeaders(string $jsCode) {
@@ -341,6 +356,7 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
             foreach ($data as $tag => $value) {
                 $this->addProperty($tag, $value);
             }
+            $this->changed = false;
         } else throw new RuntimeException(sprintf('No header block for userscript %s', $this->fileName->getName()));
     }
 
@@ -460,12 +476,12 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
      * Configured json_encode
      *
      * @param int $options JSON_{OPTIONS}
-     * @param ?string $filename if set will save json to file
      * @return string
      */
-    public function toJson(int $options = null, string $filename = null): string {
+    public function toJson(int $options = null): string {
         if (is_null($options)) $options = JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES;
-        $json = json_encode($this, $options);
+        $json = JSON::encode($this, $options);
+        return $json;
     }
 
     public function jsonSerialize() {
