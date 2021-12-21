@@ -20,7 +20,7 @@ class Icon extends Named implements Stringable, JsonSerializable, \IteratorAggre
     private $url;
 
     /** @var ?string */
-    private $b64URL;
+    private $base64URL;
 
     /** @var bool */
     private $changed = false;
@@ -43,7 +43,7 @@ class Icon extends Named implements Stringable, JsonSerializable, \IteratorAggre
         } else throw new RuntimeException('Invalid URL.');
         $this->convert = $convert;
 
-        if ($convert && !$this->b64URL) {
+        if ($convert && !$this->base64URL) {
             $this->getBase64URL();
         }
     }
@@ -81,8 +81,8 @@ class Icon extends Named implements Stringable, JsonSerializable, \IteratorAggre
 
     public function getBase64URL(): ?string {
 
-        if (preg_match('/;base64,/', $this->url)) return $this->url;
-        elseif (isset($this->b64URL)) return $this->b64URL;
+        if (preg_match('/;base64,/', $this->url)) return $this->base64URL = $this->url;
+        elseif (isset($this->base64URL)) return $this->base64URL;
         elseif ($this->convert and $this->isHTTP($this->url)) {
             $mimey = new MimeTypes();
 
@@ -97,7 +97,7 @@ class Icon extends Named implements Stringable, JsonSerializable, \IteratorAggre
                         $body->rewind();
                         if (!empty($contents = $body->getContents())) {
                             $this->changed = true;
-                            return $this->b64URL = sprintf('data:%s;base64,%s', $mime, base64_encode($contents));
+                            return $this->base64URL = sprintf('data:%s;base64,%s', $mime, base64_encode($contents));
                         }
                     }
                 } catch (Throwable $error) {

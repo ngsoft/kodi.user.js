@@ -191,6 +191,13 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         if (str_ends_with($file, self::EXT_JSON)) {
             //import json
             $instance->parseJson($contents);
+            // icon has been updated
+            if ($instance->changed) {
+                $instance->changed = false;
+                $newJson = $instance->toJson();
+                file_put_contents($filename, $newJson);
+            }
+
             return $instance;
         }
 
@@ -325,16 +332,24 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
     }
 
     private function parseJson(string $json) {
+        $this->storage = $this->properties = $this->custom = [];
         if ($data = json_decode($json, true)) {
             foreach ($data as $tag => $value) {
                 $this->addProperty($tag, $value);
             }
         }
-
         $this->changed = false;
+        foreach ($this->storage as $value) {
+            if ($value instanceof Icon && $value->getChanged()) {
+                $this->changed = true;
+                break;
+            }
+        }
     }
 
     private function parseHeaders(string $jsCode) {
+
+        $this->storage = $this->properties = $this->custom = [];
 
         if ($block = self::RE_BLOCK()->exec($jsCode)) {
 
