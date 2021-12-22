@@ -6,6 +6,8 @@
 
     const {document} = global;
 
+    root.gmconfig.initialize();
+
 
 
 
