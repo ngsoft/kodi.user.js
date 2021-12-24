@@ -2,11 +2,12 @@
 
 /* globals self, unsafeWindow */
 
-(function (global, root) {
+(function(global, root){
 
-    const {document} = global;
 
-    root.gmconfig.initialize();
+
+
+
 
 
 
