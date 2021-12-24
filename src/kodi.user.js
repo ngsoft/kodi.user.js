@@ -2,7 +2,12 @@
 
 /* globals self, unsafeWindow */
 
-(function (global, root) {
+(function(global, root){
+
+
+    root.gmconfig.initialize();
+
+    root.notify.message('Userscript loaded');
 
 
 
