@@ -9,10 +9,6 @@
 
 
 
-    console.debug(root.langcode('en'), root.langcode('french'), root.langcode('lfjdjfl'), root.langcode('fre'));
-
-
-
 
 
 

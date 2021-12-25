@@ -31,8 +31,7 @@
     "module": [
         "notify",
         "kodi",
-        "gmconfig",
-        "langcode"
+        "gmconfig"
     ],
     "include": [
         "*"
