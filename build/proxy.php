@@ -53,8 +53,7 @@ while (!is_file("$root/builder.json")) {
 
 $config = json_decode(file_get_contents("$root/builder.json"));
 $package = json_decode(file_get_contents("$root/package.json"));
-View::set('config', $config);
-View::set('package', $package);
+
 $sources = $config->sources;
 $modulePath = $config->modulepath;
 
@@ -66,6 +65,10 @@ $uri = $request->getUri();
 $origin = sprintf('%s://%s:%s', $uri->getScheme(), $uri->getHost(), $uri->getPort());
 $pathinfo = $request->getUri()->getPath();
 
+View::set('root', $root);
+View::set('config', $config);
+View::set('package', $package);
+View::set('request', $request);
 $route = null;
 
 if (isset($pathinfo) && $method == 'GET') {
@@ -79,7 +82,7 @@ if (isset($pathinfo) && $method == 'GET') {
         $route = 'proxy';
         $param = $matches[1];
     } elseif (is_file($root . $pathinfo) && realpath($root . $pathinfo) != realpath(__FILE__)) {
-        if (preg_match('#.php$#', $pathinfo)) {
+        if (preg_match('#.php$#', $pathinfo) || preg_match('#\/\.#', $pathinfo)) {
             render($factory->createResponse(403));
         }
         $route = 'file';

@@ -9,7 +9,7 @@
     ],
     "resource": [],
     "require": [],
-    "module": "messages",
+    "module": ["messages"],
     "include": [
         "*"
     ],

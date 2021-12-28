@@ -37,14 +37,25 @@
                                 <span class="icon-link"></span>
                             </a>
                         </td>
-                        <td data-label="Proxy">
-                            <a target="_blank" href="/<?= $config->destination ?>/<?= $item->getFileName()->getUserScript() ?>">
-                                /<?= $config->destination ?>/<?= $item->getFileName()->getUserScript() ?>
-                                <span class="icon-link"></span>
-                            </a>
+                        <td data-label="Build">
+                            <?php if (file_exists($root . DIRECTORY_SEPARATOR . $config->destination . DIRECTORY_SEPARATOR . $item->getFileName()->getUserScript())): ?>
+                                <a target="_blank" href="/<?= $config->destination ?>/<?= $item->getFileName()->getUserScript() ?>">
+                                    /<?= $config->destination ?>/<?= $item->getFileName()->getUserScript() ?>
+                                    <span class="icon-link"></span>
+                                </a>
+                            <?php else: ?>
+                                No Build
+                            <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>
+                <?php if (empty($scripts)): ?>
+                    <tr>
+                        <td colspan="4">
+                            No Scripts
+                        </td>
+                    </tr>
+                <?php endif; ?>
 
             </table>
         </div>
