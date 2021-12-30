@@ -11,28 +11,10 @@ if (php_sapi_name() != 'cli') {
     die('Cannot be run in browser.' . PHP_EOL);
 }
 
-require_once __DIR__ . '/vendor/autoload.php';
 
-function saveFile($contents, string $filename) {
-    $toSave = (string) $contents;
+require_once __DIR__ . '/config.php';
 
-    $dir = dirname($filename);
-    if (!is_dir($filename)) @mkdir($dir, 0777, true);
-    return file_put_contents($filename, $toSave) !== false;
-}
-
-$prev = null;
-$root = __DIR__;
-
-while (!is_file("$root/builder.json")) {
-    if ($root == $prev) {
-        throw new RuntimeException('Cannot find project root dir(builder.json).');
-    }
-    $prev = $root;
-    $root = dirname($root);
-}
-
-$config = json_decode(file_get_contents("$root/builder.json"));
+$root = $projectRoot;
 
 $sources = $config->sources;
 $destination = "$root/" . $config->destination;

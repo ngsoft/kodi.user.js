@@ -18,7 +18,7 @@ if (php_sapi_name() == 'cli') {
     die('Cannot be run in cli.' . PHP_EOL);
 }
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/config.php';
 
 function setContentType(ResponseInterface $response, string $type): ResponseInterface {
     return $response->withHeader('Content-Type', $type . '; charset=utf-8');
@@ -40,20 +40,7 @@ function render(ResponseInterface $response) {
     exit;
 }
 
-$prev = null;
-$root = __DIR__;
-
-while (!is_file("$root/builder.json")) {
-    if ($root == $prev) {
-        throw new RuntimeException('Cannot find project root dir(builder.json).');
-    }
-    $prev = $root;
-    $root = dirname($root);
-}
-
-$config = json_decode(file_get_contents("$root/builder.json"));
-$package = json_decode(file_get_contents("$root/package.json"));
-
+$root = $projectRoot;
 $sources = $config->sources;
 $modulePath = $config->modulepath;
 
@@ -102,7 +89,6 @@ if (isset($pathinfo) && $method == 'GET') {
 
             /** @var SplFileInfo $fileObj */
             foreach (Tools::getRecursiveDirectoryIterator($path, '.json') as $fileObj) {
-
                 if (!$fileObj->isFile()) continue;
                 if (!str_ends_with($fileObj->getFilename(), '.meta.json')) continue;
                 $fileName = new FileName($fileObj->getFilename());
