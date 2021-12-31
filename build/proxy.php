@@ -7,12 +7,9 @@ use GuzzleHttp\Psr7\{
 };
 use Mimey\MimeTypes;
 use NGSOFT\{
-    Tools, Userscript\FileName, Userscript\MetaBlock, Userscript\ModuleHelper, Userscript\ResponseEmitter, Userscript\View
+    Tools, Userscript\FileName, Userscript\JSON, Userscript\MetaBlock, Userscript\ModuleHelper, Userscript\ResponseEmitter, Userscript\View
 };
 use Psr\Http\Message\ResponseInterface;
-use function GuzzleHttp\{
-    json_decode, json_encode
-};
 
 if (php_sapi_name() == 'cli') {
     die('Cannot be run in cli.' . PHP_EOL);
@@ -28,7 +25,7 @@ function render(ResponseInterface $response) {
     global $factory, $mimes;
     $emitter = new ResponseEmitter();
     if ($emitter->isResponseEmpty($response) && $response->getStatusCode() > 400) {
-        $contents = json_encode(['error' => $response->getReasonPhrase(), 'code' => $response->getStatusCode()]);
+        $contents = JSON::encode(['error' => $response->getReasonPhrase(), 'code' => $response->getStatusCode()]);
         $response = setContentType($response, $mimes->getMimeType('json'))
                 ->withBody($factory->createStream($contents));
     }
@@ -156,6 +153,7 @@ if (isset($pathinfo) && $method == 'GET') {
                         }
                         $meta->setProperty('version', sprintf('%s.%s.dev', (string) intval(gmdate('y')), gmdate('m')));
                         $meta->setProperty('require', $require);
+                        $meta->setProperty('debug', true);
                         $contents = $meta->getDocComment();
 
                         $response = $response->withBody($factory->createStream($contents));
