@@ -4,6 +4,10 @@
 (function(global, root){
 
 
+    global.tampermonkey = root;
+
+    console.debug(location.origin, global.top, global.self, global.top === global.self);
+
 
 
 

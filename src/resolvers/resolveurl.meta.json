@@ -10,7 +10,7 @@
     "resource": [],
     "require": [],
     "module": [
-        "messages"
+        "jsonrpcm"
     ],
     "include": [
         "*"

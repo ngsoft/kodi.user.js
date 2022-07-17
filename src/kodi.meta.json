@@ -33,7 +33,7 @@
         "notify",
         "kodi",
         "gmconfig",
-        "messages"
+        "jsonrpcm"
     ],
     "include": [
         "*"
