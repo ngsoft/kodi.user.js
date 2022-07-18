@@ -5,7 +5,6 @@ declare(strict_types=1);
 use NGSOFT\{
     Tools, Userscript\FileName, Userscript\MetaBlock, Userscript\ModuleHelper
 };
-use function GuzzleHttp\json_decode;
 
 if (php_sapi_name() != 'cli') {
     die('Cannot be run in browser.' . PHP_EOL);
@@ -25,7 +24,7 @@ $modulePath = "$root/$modulePath";
 
 $today = sprintf('%s.%s.', (string) intval(gmdate('y')), gmdate('m'));
 
-if (!is_dir($destination)) {
+if ( ! is_dir($destination)) {
     throw new RuntimeException('Destination folder ' . $destination . ' does not exists.');
 }
 
@@ -33,19 +32,19 @@ $found = false;
 foreach ($sources as $dir) {
 
     $path = "$root/$dir";
-    if (!is_dir($path)) {
+    if ( ! is_dir($path)) {
         throw new RuntimeException('Directory ' . $path . ' does not exists.');
     }
     /** @var SplFileInfo $fileObj */
     foreach (Tools::getRecursiveDirectoryIterator($path, '.json') as $fileObj) {
 
-        if (!$fileObj->isFile()) continue;
-        if (!str_ends_with($fileObj->getFilename(), '.meta.json')) continue;
+        if ( ! $fileObj->isFile()) continue;
+        if ( ! str_ends_with($fileObj->getFilename(), '.meta.json')) continue;
         $fileName = new FileName($fileObj->getFilename());
         $pathName = $fileObj->getPathname();
         $dirName = dirname($fileObj->getPathname());
 
-        if (!is_file("$dirName/" . $fileName->getUserScript())) {
+        if ( ! is_file("$dirName/" . $fileName->getUserScript())) {
             printf("Found %s but no userscript %s, ignoring ...\n", $pathName, $fileName->getUserScript());
             continue;
         }
@@ -99,7 +98,7 @@ foreach ($sources as $dir) {
     }
 }
 
-if (!$found) throw new RuntimeException('Cannot find any script.');
+if ( ! $found) throw new RuntimeException('Cannot find any script.');
 
 
 
