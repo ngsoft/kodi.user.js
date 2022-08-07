@@ -16,7 +16,9 @@
 
     ],
     "module": [
-        "emitter"
+        "emitter",
+        "gmtools",
+        "finder"
     ],
     "include": [
         "/^https?:\\/\\/(\\w+\\.)?9anime\\.\\w+\\/watch\\//"

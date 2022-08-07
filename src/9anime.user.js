@@ -7,6 +7,7 @@
 
     const {emitter, finder} = root;
     const {JSON, document, intVal} = root.utils;
+    const {menu, setClipboard} = root.gmtools;
 
     emitter.on('page.replacestate', e => {
         let
@@ -35,8 +36,17 @@
     });
 
 
+    let videolink;
+
+    finder.find('#player iframe[src]', elem => {
+
+        videolink = elem.src;
+        menu.addItem('Copy video link', () => {
+            setClipboard(videolink, 'text');
+        }, 'cvl');
 
 
+    });
 
 
 
