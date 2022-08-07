@@ -22,13 +22,14 @@ use function json_decode,
 /**
  * @link https://www.tampermonkey.net/documentation.php?ext=dhdg
  */
-class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable, IteratorAggregate {
+class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable, IteratorAggregate
+{
 
     use ArrayAccessCountable,
         UnionType;
 
     private const BUILTIN_TAGS = [
-        'version', 'name', 'description', 'author',
+        'name', 'version', 'description', 'author',
         'namespace', 'homepage', 'homepageURL', 'website', 'source',
         'icon', 'iconURL', 'defaulticon', 'icon64', 'icon64URL',
         'nocompat', 'run-at', 'noframes', 'grant',
@@ -98,14 +99,16 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
     /**
      * @return FileName
      */
-    public function getFileName(): FileName {
+    public function getFileName(): FileName
+    {
         return $this->fileName;
     }
 
     /**
      * @return int
      */
-    public function getIndent(): int {
+    public function getIndent(): int
+    {
         return $this->indent;
     }
 
@@ -114,7 +117,8 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
      * @param FileName|string $fileName
      * @return static
      */
-    public function setFileName($fileName) {
+    public function setFileName($fileName)
+    {
         $this->checkType($fileName, FileName::class, 'string');
         $this->fileName = $fileName instanceof FileName ? $fileName : new FileName($fileName);
         return $this;
@@ -125,30 +129,35 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
      * @param int $indent
      * @return static
      */
-    public function setIndent(int $indent) {
+    public function setIndent(int $indent)
+    {
         $this->indent = max($indent, 1);
         return $this;
     }
 
-    private static function RE_BLOCK(): RegExp {
+    private static function RE_BLOCK(): RegExp
+    {
         static $re;
         $re = $re ?? RegExp::create('(?:[\/]{2,}\s*==UserScript==\n*)([\s\S]*)(?:[\/]{2,}\s*==\/UserScript==\n*)');
         return $re;
     }
 
-    private static function RE_PROP(): RegExp {
+    private static function RE_PROP(): RegExp
+    {
         static $re;
         $re = $re ?? RegExp::create('[\/]{2,}[ \t]*@([\w\-\:]+)[ \t]*(.*)\n*', 'g');
         return $re;
     }
 
-    private static function RE_KEY_VALUE(): RegExp {
+    private static function RE_KEY_VALUE(): RegExp
+    {
         static $re;
         $re = $re ?? RegExp::create('^(\S+)[ \t]+(\S+)$');
         return $re;
     }
 
-    private static function RE_BUILTIN(): RegExp {
+    private static function RE_BUILTIN(): RegExp
+    {
         static $re;
         $re = $re ?? RegExp::create(sprintf('^(?:(%s)(?:\:[\w\-]+)?)$', implode('|', self::BUILTIN_TAGS)));
         return $re;
@@ -162,7 +171,8 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
      * @param string $name userscript name
      * @return static
      */
-    static public function create(string $name): self {
+    static public function create(string $name): self
+    {
         $instance = new static();
         $instance->setFileName($name);
         return $instance;
@@ -173,15 +183,16 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
      * @param string $filename
      * @return static
      */
-    public static function loadFromFile(string $filename): self {
+    public static function loadFromFile(string $filename): self
+    {
 
-        if (!is_file($filename)) {
+        if ( ! is_file($filename)) {
             throw new RuntimeException($filename . ' does not exists.');
         }
 
         $file = basename($filename);
         $extensions = implode('|', [self::EXT_JSON, self::EXT_META, self::EXT_USERSCRIPT]);
-        if (!preg_match(sprintf('#(%s)$#', $extensions), $file)) {
+        if ( ! preg_match(sprintf('#(%s)$#', $extensions), $file)) {
             throw new RuntimeException('Cannot import ' . $file . ' invalid extension(' . $extensions . ').');
         }
 
@@ -217,7 +228,8 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
      * @param string|array|bool $value
      * @return static
      */
-    public function setProperty(string $name, $value) {
+    public function setProperty(string $name, $value)
+    {
         $this->checkType($value, 'string', 'array', 'bool');
         $this->storage[$name] = $this->storage[$name] ?? new MetaTag($name);
         /** @var MetaTag $item */
@@ -235,7 +247,7 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         $len = strlen($name);
         if ($len > $this->maxLength) $this->maxLength = $len;
         $this->properties[$name] = $name;
-        if (!self::isBuiltin($name)) $this->custom[$name] = $name;
+        if ( ! self::isBuiltin($name)) $this->custom[$name] = $name;
         return $this;
     }
 
@@ -245,7 +257,8 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
      * @param string $name
      * @param string|array|bool $value
      */
-    public function addProperty(string $name, $value) {
+    public function addProperty(string $name, $value)
+    {
 
         $this->checkType($value, 'string', 'array', 'bool');
 
@@ -264,7 +277,7 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
             else $item->addValue($value);
         } else {
             foreach ($value as $index => $val) {
-                if (!is_string($index)) {
+                if ( ! is_string($index)) {
                     $item->addValue($val);
                 } else $item->addValue($val, $index);
             }
@@ -275,7 +288,7 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         $len = strlen($name);
         if ($len > $this->maxLength) $this->maxLength = $len;
         $this->properties[$name] = $name;
-        if (!self::isBuiltin($name)) $this->custom[$name] = $name;
+        if ( ! self::isBuiltin($name)) $this->custom[$name] = $name;
         return $this;
     }
 
@@ -284,7 +297,8 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
      * @param string $name
      * @return static
      */
-    public function removeProperty(string $name) {
+    public function removeProperty(string $name)
+    {
         $this->lastBuild = null;
         unset($this->storage[$name]);
         unset($this->properties[$name]);
@@ -298,7 +312,8 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
      * @param string $name
      * @return mixed
      */
-    public function getProperty(string $name) {
+    public function getProperty(string $name)
+    {
         $value = $this->storage[$name] ?? null;
         if ($value instanceof Icon) {
             $value = (string) $value;
@@ -312,18 +327,21 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
      * Checks if changes have been mades
      * @return bool
      */
-    public function getChanged(): bool {
+    public function getChanged(): bool
+    {
         return $this->changed;
     }
 
     ////////////////////////////   Parser   ////////////////////////////
 
 
-    public static function isBuiltin(string $name): bool {
+    public static function isBuiltin(string $name): bool
+    {
         return self::RE_BUILTIN()->test($name);
     }
 
-    public static function isUnique(string $name): bool {
+    public static function isUnique(string $name): bool
+    {
         $prop = $name;
         if ($matches = self::RE_BUILTIN()->exec($name)) {
             $prop = $matches[1];
@@ -331,7 +349,8 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         return in_array($prop, self::UNIQUE_TAGS);
     }
 
-    private function checkIfIconHasBeenChanged(): bool {
+    private function checkIfIconHasBeenChanged(): bool
+    {
         $changed = false;
         foreach ($this->storage as $value) {
             if ($value instanceof Icon && $value->getChanged()) {
@@ -342,7 +361,8 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         return $changed;
     }
 
-    private function parseJson(string $json) {
+    private function parseJson(string $json)
+    {
         $this->storage = $this->properties = $this->custom = [];
         if ($data = json_decode($json, true)) {
             foreach ($data as $tag => $value) {
@@ -353,7 +373,8 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         $this->changed = $this->checkIfIconHasBeenChanged();
     }
 
-    private function parseHeaders(string $jsCode) {
+    private function parseHeaders(string $jsCode)
+    {
 
         $this->storage = $this->properties = $this->custom = [];
 
@@ -366,7 +387,7 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
 
                 $data[$tag] = $data[$tag] ?? [];
 
-                if (!self::isUnique($tag)) {
+                if ( ! self::isUnique($tag)) {
                     if ($matches = self::RE_KEY_VALUE()->exec($value)) {
                         list(, $prop, $value) = $matches;
                         $data[$tag][$prop] = $value;
@@ -384,7 +405,8 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
 
     ////////////////////////////   Builder   ////////////////////////////
 
-    private function getFormatIterator() {
+    private function getFormatIterator()
+    {
 
         $properties = $this->properties;
         $len = 0;
@@ -395,20 +417,21 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
             foreach ($block as $tag) {
                 if ($tag == 'custom') {
                     foreach ($this->custom as $prop) {
-                        $len++;
+                        $len ++;
                         yield from $this->storage[$prop];
                     }
                     continue;
                 }
                 if (isset($properties[$tag])) {
-                    $len++;
+                    $len ++;
                     yield from $this->storage[$tag];
                 }
             }
         }
     }
 
-    public function getDocComment(): string {
+    public function getDocComment(): string
+    {
         if (is_string($this->lastBuild)) return $this->lastBuild;
 
         $comments = '';
@@ -428,7 +451,7 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
                 continue;
             }
 
-            for ($i = strlen($tag); $i < $this->maxLength + $this->indent; $i++) {
+            for ($i = strlen($tag); $i < $this->maxLength + $this->indent; $i ++ ) {
                 $comment .= " ";
             }
 
@@ -448,27 +471,32 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
 
 
 
-    public function __get($name) {
+    public function __get($name)
+    {
 
         return $this->getProperty($name);
     }
 
-    public function __isset($name) {
+    public function __isset($name)
+    {
         return $this->offsetExists($name);
     }
 
-    public function __unset($name) {
+    public function __unset($name)
+    {
         $this->removeProperty($name);
     }
 
-    public function __set($name, $value) {
+    public function __set($name, $value)
+    {
         $this->addProperty($name, $value);
     }
 
     ////////////////////////////   Interfaces   ////////////////////////////
 
     /** {@inheritdoc} */
-    public function &offsetGet($offset) {
+    public function &offsetGet($offset)
+    {
 
         if ($offset === null || is_int($offset)) {
             throw new OutOfRangeException();
@@ -478,7 +506,8 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
     }
 
     /** {@inheritdoc} */
-    public function offsetSet($offset, $value) {
+    public function offsetSet($offset, $value)
+    {
         if ($offset === null || is_int($offset)) {
             throw new OutOfRangeException();
         }
@@ -486,7 +515,8 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         $this->storage[$offset] = $value;
     }
 
-    public function getIterator() {
+    public function getIterator()
+    {
         foreach ($this->storage as $item) {
             if ($item instanceof MetaTag) {
                 yield from $item->getIterator();
@@ -500,21 +530,25 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
      * @param int $options JSON_{OPTIONS}
      * @return string
      */
-    public function toJson(int $options = null): string {
+    public function toJson(int $options = null): string
+    {
         if (is_null($options)) $options = JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES;
         $json = JSON::encode($this, $options);
         return $json;
     }
 
-    public function jsonSerialize() {
+    public function jsonSerialize()
+    {
         return $this->storage;
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return $this->getDocComment();
     }
 
-    public function __debugInfo() {
+    public function __debugInfo()
+    {
 
         return [
             'fileName' => $this->fileName,
@@ -522,7 +556,8 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         ];
     }
 
-    public function __clone() {
+    public function __clone()
+    {
 
         $this->fileName = clone $this->fileName;
 
@@ -530,13 +565,14 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         $result = [];
 
         foreach ($orig as $prop => $value) {
-            if (!is_object($value)) $result[$prop] = $value;
+            if ( ! is_object($value)) $result[$prop] = $value;
             else $result[$prop] = clone($value);
         }
         $this->storage = $result;
     }
 
-    private function __construct() {
+    private function __construct()
+    {
 
     }
 
