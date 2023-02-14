@@ -15,7 +15,7 @@
         "https://cdn.jsdelivr.net/npm/pdf-lib@latest/dist/pdf-lib.min.js"
     ],
     "module": [
-        "gmfetch",
+        "manga",
         "emitter",
         "gmtools",
         "finder"

@@ -3,7 +3,14 @@
 (function(global, root){
 
     const {PDFDocument} = PDFLib;
-    const {fetch} = root.gmfetch;
+
+    const {manga} = root;
+
+    const isBeta = location.host === "beta.asurascans.com";
+
+
+    console.debug(manga, 'manga');
+
 
 
 
