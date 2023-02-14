@@ -1,0 +1,34 @@
+{
+    "name": "Manga Downloader",
+    "description": "Download Mangas",
+    "author": "Aymeric Anger",
+    "namespace": "https://github.com/ngsoft/kodi.user.js",
+    "noframes": true,
+    "grant": [
+        "GM_xmlhttpRequest",
+        "GM_registerMenuCommand",
+        "GM_unregisterMenuCommand",
+        "GM_addStyle"
+    ],
+    "resource": [],
+    "require": [
+        "https://cdn.jsdelivr.net/npm/pdf-lib@latest/dist/pdf-lib.min.js"
+    ],
+    "module": [
+        "gmfetch",
+        "emitter",
+        "gmtools",
+        "finder"
+    ],
+    "include": [
+        "/^https?:\\/\\/beta\\.asurascans\\.\\w+\\/(comics|read)\\//",
+        "/^https?:\\/\\/www\\.asurascans\\.\\w+\\/.*\\//"
+    ],
+    "connect": [
+        "*"
+    ],
+    "icon": {
+        "url": "https://www.asurascans.com/wp-content/uploads/2021/03/cropped-Group_1-1-32x32.png",
+        "base64URL": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAACGVBMVEUAAAA4OEAqKi0mJiglJSchISI4OEAkJCUiIiM4OEA4OEAzMzkkJCUjIyQhISIiIiIhISE4OEE4OEAkJCUiIiI4OEAiIiMhISI4OEAoKCokJCYhISIhISE4OEAiIiIhISE4OEAhISIhISE4OEAiIiIhISE4OEAhISIhISEhISE4OEAhISE4OEAiIiIhISIhISE4OEAmIishISE4OEA3Nz80NDs9J1IiISM4OEAiIiLHx8e9vb23t7erq6uMjIyJiYl3d3deXl5WVlZzNK5yM6xxM6pwM6lvM6dSUlJuM6ZrMqBqMqBnMZplMJdkMJRjMJJhL49gL41fL4xeL4tdL4lcLodaLoRULHpULHlTLHdSLHdSLHZQK3I+Pj5PK3FNK25NK21MK2tKKmhJKmc5OUFIKmQ4OEA4OD9HKWM4ODhGKWA3Nz83Nz5FKWBFKV9EKV42Nj42Nj1DKFs1NTs/KFYzMzozMzk/J1Q+J1QyMjgyMjcxMTY7J04wMDU6Jkw5JkovLzQ3Jkc3JkYuLjMuLjI2JUUtLTItLTE1JUQ0JUIzJUEsLC8yJT8rKy4yJD8xJD4qKi0qKSopKSwuJDguJDcoKCstIzcoKCosIzUsIzQnJyonJykrIzMqIzEqIzApIzAmJigoIi4lJSYoIi0nIiskJCUlIiklIigjIyQjIyMkISckISYiIiMjISUiIiIiISMiISIhISIhISEYVJs2AAAAOnRSTlMACgoKCgwQEBAkJiYmJiYoKDIyMjJaWlyNjY2PkZ2dnZ+hoc3NzdXV1dfr6+3t7e339/f7+/v7+/39CVwlIwAAAf9JREFUeAFlwYlfi3EcwPHvHKPJbcwxxpisYcyx3EnOHCFXJHw9rjJCJEeO5Ag5clSOEBM6Pn+h135PPVuv3m9Jc3v9wUg8Hgn6vW4ZzBOIqiMa8MhALl9MB4j5XJIhK6SDhDziGB/WPpdfJ7/VWmqEJ0ifrLDarIddAE2WGuEsMVwhtdV0YGs5o0bIJSk+tdXiaLbU8ImIeGJqXOoipZeUOjViHhEJqO0ZQNuBwsOdQNJSIyDijqphJaGncsv+U0W7PwPVakTd4lXbFbi/a89L+FmyoxEeqM0rfrXVcWhTeTdAd9nmGzSpzS9BtT1v3PmCPne2J1rVFpSI2loTb3D8ONqhtojE1ZY830naLS6oEZe4GhXc+rh11dpzQP7qNa/uUa1GXCJq1NB5lfx1G+H3hvXHPnzikRoRCarRAAkcT6FZjaD41fgKVX/o9wT+WpriF6+mVADl3+l3HbipKV5xR1VVG4B9PfS72AYtlqpG3SIBVasO+LIXx9vTwG21NCAinmXXagDOVpJW/At665qWjxIRmfoeoLeonbQjxwG6pknKkPkAj4vJULXtH5AzVIzRucDJMjLUFzRCbrb0mbQYSk+Q4V1BPbkTxTFmAYkSMtQXtudkS4bhM1aW3sXRfXDF9GEy0Lg5S3AsnT1WBhsxeebchXl5i+bNmjJSHP8BjASSa3NmPeIAAAAASUVORK5CYII="
+    }
+}

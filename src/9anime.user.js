@@ -29,8 +29,6 @@
             title = title.replace(matches[0], '');
         }
 
-
-
         document.title = `${title}.${season}E${number}`;
 
     });

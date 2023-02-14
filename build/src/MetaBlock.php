@@ -29,7 +29,7 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
         UnionType;
 
     private const BUILTIN_TAGS = [
-        'name', 'version', 'description', 'author',
+        'version', 'name', 'description', 'author',
         'namespace', 'homepage', 'homepageURL', 'website', 'source',
         'icon', 'iconURL', 'defaulticon', 'icon64', 'icon64URL',
         'nocompat', 'run-at', 'noframes', 'grant',
@@ -46,7 +46,7 @@ class MetaBlock implements ArrayAccess, Countable, JsonSerializable, Stringable,
     ];
     private const SORT_TAGS = [
         [
-            'version', 'name', 'description', 'author',
+            'name', 'version', 'description', 'author',
             'namespace', 'homepage', 'homepageURL', 'website', 'source',
         ],
         [
