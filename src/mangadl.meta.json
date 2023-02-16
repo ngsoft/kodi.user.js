@@ -11,7 +11,9 @@
         "GM_addStyle",
         "GM_getResourceURL"
     ],
-    "resource": [],
+    "resource": {
+        "emptystyle": "/lib/styles/empty.css"
+    },
     "require": [
         "https://cdn.jsdelivr.net/npm/pdf-lib@latest/dist/pdf-lib.min.js"
     ],

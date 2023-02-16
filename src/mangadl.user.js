@@ -97,7 +97,7 @@
 
 
 
-
+    console.debug(root.gmtools);
 
 
 
