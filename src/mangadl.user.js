@@ -99,10 +99,6 @@
 
 
 
-    console.debug(root.gmtools);
-
-
-    console.debug('===========resource=================', getResource('emptystyle'));
 
 
 })(typeof unsafeWindow !== 'undefined' ? unsafeWindow : window, typeof self !== 'undefined' ? self : this);
