@@ -2,6 +2,8 @@
 
 (function(global, root, undef){
 
+    const {getResource} = root.gmtools;
+
     const {PDFDocument} = PDFLib;
 
     const {Manga, Chapter, ChapterImage} = root.manga;
@@ -99,6 +101,8 @@
 
     console.debug(root.gmtools);
 
+
+    console.debug(getResource('emptystyle'));
 
 
 })(typeof unsafeWindow !== 'undefined' ? unsafeWindow : window, typeof self !== 'undefined' ? self : this);
