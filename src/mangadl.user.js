@@ -6,11 +6,11 @@
 
     const {Manga, Chapter, ChapterImage} = root.manga;
 
-    const isBeta = location.host === "beta.asurascans.com";
+    const isBeta = /^beta/.test(location.host);
 
 
 
-    let series = (() => {
+    let= (() => {
         if (isBeta) {
 
 
@@ -61,11 +61,6 @@
                 details = document.querySelector('.infox'),
                 isChapter = document.querySelector('.chapterbody .postarea article');
 
-
-        if (details === null && isChapter === null) {
-            return;
-        }
-
         let
                 chapterList = [],
                 title = details !== null ?
@@ -98,15 +93,7 @@
 
         return new Manga(title, description, chapterList);
 
-
-
-
-
     })();
-
-
-
-
 
 
 

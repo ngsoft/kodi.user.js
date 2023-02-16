@@ -22,7 +22,7 @@
     ],
     "include": [
         "/^https?:\\/\\/beta\\.asurascans\\.\\w+\\/(comics|read)\\//",
-        "/^https?:\\/\\/www\\.asurascans\\.\\w+\\/.*\\//"
+        "/^https?:\\/\\/www\\.asurascans\\.\\w+\\/(manga|.*-chapter-.*)\\//"
     ],
     "connect": [
         "*"
