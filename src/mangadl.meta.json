@@ -8,7 +8,8 @@
         "GM_xmlhttpRequest",
         "GM_registerMenuCommand",
         "GM_unregisterMenuCommand",
-        "GM_addStyle"
+        "GM_addStyle",
+        "GM_getResourceURL"
     ],
     "resource": [],
     "require": [
