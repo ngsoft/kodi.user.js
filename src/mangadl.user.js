@@ -61,6 +61,11 @@
                 details = document.querySelector('.infox'),
                 isChapter = document.querySelector('.chapterbody .postarea article');
 
+
+        if (details === null && isChapter === null) {
+            return;
+        }
+
         let
                 chapterList = [],
                 title = details !== null ?
