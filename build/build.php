@@ -6,7 +6,8 @@ use NGSOFT\{
     Tools, Userscript\FileName, Userscript\MetaBlock, Userscript\ModuleHelper
 };
 
-if (php_sapi_name() != 'cli') {
+if (php_sapi_name() != 'cli')
+{
     die('Cannot be run in browser.' . PHP_EOL);
 }
 
@@ -24,19 +25,23 @@ $modulePath = "$root/$modulePath";
 
 $today = sprintf('%s.%s.', (string) intval(gmdate('y')), gmdate('m'));
 
-if ( ! is_dir($destination)) {
+if ( ! is_dir($destination))
+{
     throw new RuntimeException('Destination folder ' . $destination . ' does not exists.');
 }
 
 $found = false;
-foreach ($sources as $dir) {
+foreach ($sources as $dir)
+{
 
     $path = "$root/$dir";
-    if ( ! is_dir($path)) {
+    if ( ! is_dir($path))
+    {
         throw new RuntimeException('Directory ' . $path . ' does not exists.');
     }
     /** @var SplFileInfo $fileObj */
-    foreach (Tools::getRecursiveDirectoryIterator($path, '.json') as $fileObj) {
+    foreach (Tools::getRecursiveDirectoryIterator($path, '.json') as $fileObj)
+    {
 
         if ( ! $fileObj->isFile()) continue;
         if ( ! str_ends_with($fileObj->getFilename(), '.meta.json')) continue;
@@ -44,19 +49,22 @@ foreach ($sources as $dir) {
         $pathName = $fileObj->getPathname();
         $dirName = dirname($fileObj->getPathname());
 
-        if ( ! is_file("$dirName/" . $fileName->getUserScript())) {
+        if ( ! is_file("$dirName/" . $fileName->getUserScript()))
+        {
             printf("Found %s but no userscript %s, ignoring ...\n", $pathName, $fileName->getUserScript());
             continue;
         }
         $version = '';
         $rev = 0;
         $destScript = "$destination/" . $fileName->getUserScript();
-        if (is_file($destScript)) {
+        if (is_file($destScript))
+        {
             $tmp = MetaBlock::loadFromFile($destScript);
             $version = $tmp->getProperty('version') ?? '';
         }
 
-        if (str_starts_with($version, $today)) {
+        if (str_starts_with($version, $today))
+        {
             $split = explode(".", $version);
             $rev = intval($split[2]) + 1;
         }
@@ -67,6 +75,28 @@ foreach ($sources as $dir) {
         $meta = MetaBlock::loadFromFile($pathName);
         $require = $meta->getProperty('require') ?? [];
         $modules = $meta->getProperty('module') ?? [];
+        $resources = $meta->getProperty('resource') ?? [];
+
+        if (is_array($resources))
+        {
+            $rmod = false;
+            foreach ($resources as $rname => $rvalue)
+            {
+                if (str_starts_with($rvalue, '/'))
+                {
+                    $resources[$rname] = $basePath . $rvalue;
+                    $rmod = true;
+                }
+            }
+
+            if ($rmod)
+            {
+
+                $meta->setProperty('resource', $resources);
+            }
+        }
+
+
         if (is_string($modules)) $modules = [$modules];
         if (is_bool($modules)) $modules = [];
         $meta->removeProperty('module');
@@ -77,14 +107,16 @@ foreach ($sources as $dir) {
 
         $helper = new ModuleHelper();
 
-        foreach ($modules as $moduleName) {
+        foreach ($modules as $moduleName)
+        {
             $moduleFile = "$modulePath/$moduleName.js";
             $helper->addModule($moduleFile);
         }
         $contents .= $helper->getCode();
         $contents .= file_get_contents("$dirName/" . $fileName->getUserScript());
         printf("Saving '%s'\n", $destScript);
-        if (file_put_contents($destScript, $contents) !== false) {
+        if (file_put_contents($destScript, $contents) !== false)
+        {
             printf("Saving '%s/%s'\n", $destination, $fileName->getMetaScript());
             file_put_contents($destination . DIRECTORY_SEPARATOR . $fileName->getMetaScript(), $comment);
             $minFile = $fileName->getName() . '.min.user.js';
