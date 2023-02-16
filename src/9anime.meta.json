@@ -11,7 +11,7 @@
         "GM_addStyle",
         "GM_setClipboard"
     ],
-    "resource": [],
+    "resource": {},
     "require": [
 
     ],
