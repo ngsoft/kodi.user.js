@@ -3,6 +3,7 @@
 (function(global, root, undef){
 
     const {getResource, menu} = root.gmtools;
+    const{loadCSS} = root.gmtools.resource;
 
     const {PDFDocument} = PDFLib;
 
@@ -106,18 +107,25 @@
     })();
 
     menu.clear();
+    
+    if (series) {
 
-    if (currentChapter !== null) {
-        menu.addItem('Download ' + currentChapter.label, () => {
-            alert('Downloading ' + currentChapter.label);
+        loadCSS('overlay');
+
+        if (currentChapter !== null) {
+            menu.addItem('Download ' + currentChapter.label, () => {
+                alert('Downloading ' + currentChapter.label);
+            });
+        }
+
+        menu.addItem('Download Manga', () => {
+
+            alert('Downloading ' + series.title);
+
         });
     }
 
-    menu.addItem('Download Manga', () => {
 
-        alert('Downloading ' + series.title);
-
-    });
 
 
     console.debug(series);

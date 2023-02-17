@@ -12,7 +12,7 @@
         "GM_getResourceURL"
     ],
     "resource": {
-        "emptystyle": "/lib/styles/empty.css"
+        "overlay": "/lib/styles/gmoverlay.css"
     },
     "require": [
         "https://cdn.jsdelivr.net/npm/pdf-lib@latest/dist/pdf-lib.min.js"
