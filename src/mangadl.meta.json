@@ -5,7 +5,6 @@
     "namespace": "https://github.com/ngsoft/kodi.user.js",
     "noframes": true,
     "grant": [
-        "GM_xmlhttpRequest",
         "GM_registerMenuCommand",
         "GM_unregisterMenuCommand",
         "GM_addStyle",
@@ -19,11 +18,9 @@
     ],
     "module": [
         "manga",
-        "emitter",
         "gmtools",
-        "finder",
-        "utils",
         "asuraui"
+
     ],
     "include": [
         "/^https?:\\/\\/beta\\.asurascans\\.\\w+\\/(comics|read)\\//",

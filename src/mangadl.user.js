@@ -2,10 +2,7 @@
 
 (function(global, root, undef){
 
-    const {emitter} = root;
-    const {getResource, menu} = root.gmtools;
-    const {loadCSS} = root.gmtools.resource;
-    const {createElement} = root.utils;
+    const {menu} = root.gmtools;
 
     const {PDFDocument} = PDFLib;
 
@@ -13,7 +10,6 @@
     const {Manga, Chapter, ChapterImage} = root.manga;
 
     let isBeta = /^beta/.test(location.host), currentChapter = null;
-
 
 
     let series = (() => {
@@ -111,7 +107,7 @@
 
 
 
-console.debug(series);
+
 
     menu.clear();
     
@@ -131,7 +127,7 @@ console.debug(series);
         });
     }
 
-
+console.debug('series', series);
 
 
 
