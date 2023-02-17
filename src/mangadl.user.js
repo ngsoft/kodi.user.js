@@ -110,7 +110,7 @@
     
     if (series) {
 
-        loadCSS('overlay');
+        loadCSS('overlay', 'gm-overlay-css');
 
         if (currentChapter !== null) {
             menu.addItem('Download ' + currentChapter.label, () => {
