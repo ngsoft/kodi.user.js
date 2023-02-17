@@ -115,6 +115,8 @@
         static async create(){
 
             if (!(this.root instanceof Element)) {
+                loadCSS('overlay');
+
                 let
                         overlay = createElement('div', {class: 'gmconfig_overlay'}),
                         frame = createElement('div', {class: 'gmconfig_frame'}),
@@ -200,7 +202,7 @@
     
     if (series) {
 
-        loadCSS('overlay');
+
 
         if (currentChapter !== null) {
             menu.addItem('Download ' + currentChapter.label, () => {
