@@ -4,11 +4,12 @@
 
     const {emitter} = root;
     const {getResource, menu} = root.gmtools;
-    const{loadCSS} = root.gmtools.resource;
+    const {loadCSS} = root.gmtools.resource;
     const {createElement} = root.utils;
 
     const {PDFDocument} = PDFLib;
 
+    const {Overlay} = root.asuraui;
     const {Manga, Chapter, ChapterImage} = root.manga;
 
     let isBeta = /^beta/.test(location.host), currentChapter = null;
@@ -110,93 +111,7 @@
 
 
 
-    class Overlay {
 
-        static async create(){
-
-            if (!(this.root instanceof Element)) {
-                loadCSS('overlay');
-
-                let
-                        overlay = createElement('div', {class: 'gmconfig_overlay'}),
-                        frame = createElement('div', {class: 'gmconfig_frame'}),
-                        style = createElement('style', {type: 'text/css'}),
-                        pos = 0;
-
-                overlay.appendChild(frame);
-                this.root = overlay;
-                this.frame = frame;
-                this.style = style;
-
-                emitter(overlay).on('click', e => {
-
-                    if (e.target.closest('.gmconfig_frame') !== null) {
-                        return;
-                    }
-
-                    e.preventDefault();
-                    this.hide();
-
-
-                });
-
-
-                emitter(frame)
-                        .on('overlay.show', e => {
-                            e.preventDefault();
-                            pos = document.documentElement.scrollTop;
-                            if (pos < 0) {
-                                pos = 0;
-                            }
-                            this.style.innerHTML += `html.noscroll{top:-${pos}px;}`;
-                            document.documentElement.classList.add('noscroll');
-                            document.body.appendChild(overlay);
-
-                            this.open = true;
-                        })
-                        .on('overlay.hide', e => {
-                            e.preventDefault();
-                            document.body.removeChild(overlay);
-                            document.documentElement.classList.remove('noscroll');
-                            if (pos > 0) document.documentElement.scrollTo(0, pos);
-                            this.open = false;
-                        });
-            }
-
-            return this.frame;
-
-        }
-
-        static async show(){
-
-            let elem = await this.create();
-
-            if (this.open) {
-                return elem;
-            }
-
-            emitter(elem).trigger('overlay.show');
-            return elem;
-
-        }
-        static async hide(){
-            let elem = await this.create();
-            if (this.open) {
-                emitter(elem).trigger('overlay.hide');
-            }
-
-            return elem;
-
-        }
-
-        static toggle(){
-            if (this.open) {
-                return this.hide();
-            }
-            return this.show();
-
-        }
-    }
 
     menu.clear();
     

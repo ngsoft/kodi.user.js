@@ -180,7 +180,7 @@ if (isset($pathinfo) && $method == 'GET')
                             {
                                 if (str_starts_with($v, '/'))
                                 {
-                                    $res[$n] = sprintf('%s%s', $origin, $v);
+                                    $res[$n] = sprintf('%s%s?%u', $origin, $v, time());
                                 }
                             }
 
