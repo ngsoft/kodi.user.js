@@ -111,7 +111,7 @@
 
 
 
-
+console.debug(series);
 
     menu.clear();
     
@@ -134,7 +134,7 @@
 
 
 
-    console.debug(series);
+
 
 })(typeof unsafeWindow !== 'undefined' ? unsafeWindow : window, typeof self !== 'undefined' ? self : this);
 
