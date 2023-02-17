@@ -4,7 +4,7 @@ html.noscroll {
     width: 100%;
     z-index:-1;
 }
-#gmconfig_overlay{
+.gmconfig_overlay{
     position:fixed;
     z-index:2147483645;
     top:0;
@@ -16,7 +16,7 @@ html.noscroll {
     margin: 0;
     padding:0;
 }
-iframe#gmconfig_frame{
+.gmconfig_frame{
     position: fixed;
     top:5%;
     left:50%;
@@ -26,7 +26,7 @@ iframe#gmconfig_frame{
     min-height: 700px;
 }
 @media screen and (max-width: 767px) {
-    iframe#gmconfig_frame{
+    .gmconfig_frame{
         top:0;
         left: 0;
         width:100%;

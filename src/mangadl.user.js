@@ -2,8 +2,10 @@
 
 (function(global, root, undef){
 
+    const {emitter} = root;
     const {getResource, menu} = root.gmtools;
     const{loadCSS} = root.gmtools.resource;
+    const {createElement} = root.utils;
 
     const {PDFDocument} = PDFLib;
 
@@ -106,11 +108,42 @@
 
     })();
 
+
+
+    class Overlay {
+
+        static async create(){
+
+            if (!(this.root instanceof Element)) {
+
+
+
+
+
+
+            }
+
+            return this.root;
+
+        }
+
+        static async show(){
+
+        }
+        static async hide(){
+
+        }
+
+        static toggle(){
+
+        }
+    }
+
     menu.clear();
     
     if (series) {
 
-        loadCSS('overlay', 'gm-overlay-css');
+        loadCSS('overlay');
 
         if (currentChapter !== null) {
             menu.addItem('Download ' + currentChapter.label, () => {

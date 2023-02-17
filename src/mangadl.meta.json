@@ -21,7 +21,8 @@
         "manga",
         "emitter",
         "gmtools",
-        "finder"
+        "finder",
+        "utils"
     ],
     "include": [
         "/^https?:\\/\\/beta\\.asurascans\\.\\w+\\/(comics|read)\\//",
