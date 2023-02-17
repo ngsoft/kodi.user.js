@@ -22,7 +22,8 @@
         "emitter",
         "gmtools",
         "finder",
-        "utils"
+        "utils",
+        "asuraui"
     ],
     "include": [
         "/^https?:\\/\\/beta\\.asurascans\\.\\w+\\/(comics|read)\\//",
