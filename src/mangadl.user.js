@@ -115,6 +115,27 @@
         static async create(){
 
             if (!(this.root instanceof Element)) {
+                let
+                        overlay = createElement('div', {class: 'gmconfig_overlay'}),
+                        frame = createElement('div', {class: 'gmconfig_frame'}),
+                        style = createElement('style', {type: 'text/css'}),
+                        pos = document.documentElement.scrollTop;
+
+                overlay.appendChild(frame);
+                this.root = overlay;
+                this.frame = frame;
+                this.style = style;
+
+                this.pos = pos > 0 ? pos : 0;
+
+
+                emitter(frame)
+                        .on('overlay.show', e => {
+
+                        })
+                        .on('overlay.hide', e => {
+
+                        });
 
 
 
