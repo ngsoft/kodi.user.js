@@ -1,0 +1,36 @@
+html.noscroll {
+    position: fixed;
+    overflow-y: hidden;
+    width: 100%;
+    z-index:-1;
+}
+#gmconfig_overlay{
+    position:fixed;
+    z-index:2147483645;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background-color:rgba(0,0,0,.8);
+    overflow-y:scroll;
+    margin: 0;
+    padding:0;
+}
+iframe#gmconfig_frame{
+    position: fixed;
+    top:5%;
+    left:50%;
+    z-index: 2147483646;
+    transform:translateX(-50%);
+    width: 80%;
+    min-height: 700px;
+}
+@media screen and (max-width: 767px) {
+    iframe#gmconfig_frame{
+        top:0;
+        left: 0;
+        width:100%;
+        height: 100%;
+        transform:unset;
+    }
+}

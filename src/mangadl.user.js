@@ -2,17 +2,17 @@
 
 (function(global, root, undef){
 
-    const {getResource} = root.gmtools;
+    const {getResource, menu} = root.gmtools;
 
     const {PDFDocument} = PDFLib;
 
     const {Manga, Chapter, ChapterImage} = root.manga;
 
-    const isBeta = /^beta/.test(location.host);
+    let isBeta = /^beta/.test(location.host), currentChapter = null;
 
 
 
-    let= (() => {
+    let series = (() => {
         if (isBeta) {
 
 
@@ -42,10 +42,14 @@
             } else {
                 document.querySelector('.chapter-section .dropdown-menu').querySelectorAll('a.dropdown-item').forEach(el => {
 
-                    let href = el.href, current = el.classList.contains('active');
+                    let href = el.href, current = el.classList.contains('active'), chap;
                     if (!ulist.includes(href)) {
-                        chapterList.push(new Chapter(href, el.innerText, current));
+                        chapterList.push((chap = new Chapter(href, el.innerText, current)));
                         ulist.push(href);
+                    }
+
+                    if (current) {
+                        currentChapter = chap;
                     }
 
 
@@ -82,10 +86,14 @@
         } else {
             document.querySelector('.selector').querySelectorAll('select#chapter option[value*="https"]').forEach(el => {
 
-                let href = el.value, current = el.selected === true;
+                let href = el.value, current = el.selected === true, chap;
                 if (!ulist.includes(href)) {
-                    chapterList.push(new Chapter(href, el.innerText, current));
+                    chapterList.push((chap = new Chapter(href, el.innerText, current)));
                     ulist.push(href);
+                }
+
+                if (current) {
+                    currentChapter = chap;
                 }
 
             });
@@ -97,9 +105,22 @@
 
     })();
 
+    menu.clear();
+
+    if (currentChapter !== null) {
+        menu.addItem('Download ' + currentChapter.label, () => {
+            alert('Downloading ' + currentChapter.label);
+        });
+    }
+
+    menu.addItem('Download Manga', () => {
+
+        alert('Downloading ' + series.title);
+
+    });
 
 
-
+    console.debug(series);
 
 })(typeof unsafeWindow !== 'undefined' ? unsafeWindow : window, typeof self !== 'undefined' ? self : this);
 
