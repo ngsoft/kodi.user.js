@@ -34,3 +34,7 @@ html.noscroll {
         transform:unset;
     }
 }
+
+[hidden], template {
+    display: none !important;
+}
