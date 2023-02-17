@@ -126,7 +126,7 @@
         }
 
         menu.addItem('Download Manga', () => {
-            Overlay.toggle();
+            Overlay.toggle(series);
 
         });
     }
