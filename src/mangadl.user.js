@@ -117,12 +117,14 @@
 
         if (currentChapter !== null) {
             menu.addItem('Download ' + currentChapter.label, () => {
-                alert('Downloading ' + currentChapter.label);
+                Overlay.downloadSelection(series, currentChapter).then(console.debug);
             });
         }
 
         menu.addItem('Download Manga', () => {
-            Overlay.getSelection(series).then(console.debug);
+            Overlay.getSelection(series).then(sel => {
+                Overlay.downloadSelection(series, sel).then(console.debug);
+            });
 
         });
     }
