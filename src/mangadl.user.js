@@ -7,7 +7,7 @@
     const {PDFDocument} = PDFLib;
 
     const {Overlay} = root.asuraui;
-    const {Manga, Chapter, ChapterImage} = root.manga;
+    const {Manga, Chapter, ChapterImage} = root.mangas;
 
     let isBeta = /^beta/.test(location.host), currentChapter = null;
 
@@ -122,7 +122,7 @@
         }
 
         menu.addItem('Download Manga', () => {
-            Overlay.toggle(series);
+            Overlay.getSelection(series).then(console.debug);
 
         });
     }
