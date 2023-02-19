@@ -8,6 +8,7 @@
 
     const {Overlay} = root.asuraui;
     const {Manga, Chapter, ChapterImage} = root.mangas;
+    const {html2doc} = utils;
 
     let isBeta = /^beta/.test(location.host), currentChapter = null;
 
@@ -43,6 +44,9 @@
                 document.querySelector('.chapter-section .dropdown-menu').querySelectorAll('a.dropdown-item').forEach(el => {
 
                     let href = el.href, current = el.classList.contains('active'), chap;
+                    if (href === '') {
+                        href = location.href;
+                    }
                     if (!ulist.includes(href)) {
                         chapterList.push((chap = new Chapter(href, el.innerText, current)));
                         ulist.push(href);
@@ -105,7 +109,50 @@
 
     })();
 
+    function getImages(html){
 
+
+
+
+
+    }
+
+
+    function downloadChapter(selection, ui){
+        return new Promise((resolve, reject) => {
+            console.debug(selection);
+            let tot = selection.length, progressbar = ui.progressbar, current = 0;
+
+            progressbar.total = tot;
+
+            selection.forEach(chapter => {
+
+                fetch(chapter.url, {
+                    referrer: chapter.url
+                }).then(resp => resp.text()).then(txt => html2doc(txt)).then(doc => {
+
+                    let images = [];
+
+                    doc.querySelectorAll('.main-container img[src*="img.asurascans.com"], #readerarea img.aligncenter')
+                            .forEach(img => {
+                                images.push(new ChapterImage(img.src, images.length))
+                            });
+
+                    chapter.images = images;
+
+                    console.debug(chapter.images);
+
+
+
+
+                });
+
+
+
+
+            });
+        });
+    }
 
 
 
@@ -115,13 +162,18 @@
 
         if (currentChapter !== null) {
             menu.addItem('Download ' + currentChapter.label, () => {
-                Overlay.downloadSelection(series, currentChapter).then(console.debug);
+                Overlay.downloadSelection(series, currentChapter).then(instance => {
+                    downloadChapter([currentChapter], instance);
+                });
             });
         }
 
         menu.addItem('Download Manga', () => {
             Overlay.getSelection(series).then(sel => {
-                Overlay.downloadSelection(series, sel).then(console.debug);
+                Overlay.downloadSelection(series, sel).then(ui => {
+                    downloadChapter(sel, instance);
+
+                });
             });
 
         });
