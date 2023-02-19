@@ -113,8 +113,6 @@
     
     if (series) {
 
-
-
         if (currentChapter !== null) {
             menu.addItem('Download ' + currentChapter.label, () => {
                 Overlay.downloadSelection(series, currentChapter).then(console.debug);
@@ -131,7 +129,6 @@
         });
     }
 
-console.debug('series', series);
 
 
 
