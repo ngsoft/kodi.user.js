@@ -122,7 +122,6 @@
         menu.addItem('Download Manga', () => {
             Overlay.getSelection(series).then(sel => {
 
-                console.debug(sel);
                 Overlay.downloadSelection(series, sel).then(console.debug);
             });
 
