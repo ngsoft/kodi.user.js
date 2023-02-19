@@ -7,7 +7,7 @@
     const {PDFDocument} = PDFLib;
 
     const {Overlay} = root.asuraui;
-    const {Manga, Chapter, ChapterImage} = root.mangas;
+    const {Manga, Chapter} = root.mangas;
     const {html2doc} = utils;
 
     let isBeta = /^beta/.test(location.host), currentChapter = null;
@@ -134,13 +134,11 @@
                     let images = [];
 
                     doc.querySelectorAll('.main-container img[src*="img.asurascans.com"], #readerarea img.aligncenter')
-                            .forEach(img => {
-                                images.push(new ChapterImage(img.src, images.length))
-                            });
+                            .forEach(img => images.push(img.src));
 
                     chapter.images = images;
 
-                    console.debug(chapter.images);
+
 
 
 
