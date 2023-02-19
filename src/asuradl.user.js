@@ -13,6 +13,16 @@
     let isBeta = /^beta/.test(location.host), currentChapter = null;
 
 
+    function getImageList(doc){
+        let images = [];
+
+        doc.querySelectorAll('.main-container img[src*="img.asurascans.com"], #readerarea img.aligncenter')
+                .forEach(img => images.push(img.src));
+        return images;
+    }
+
+
+
     let series = (() => {
         if (isBeta) {
 
@@ -26,7 +36,7 @@
                     title = details !== null ?
                     details.querySelector('h2').innerText :
                     isChapter.querySelector('a[href*="/comics/"]').innerText,
-                    description = details === null ? '' : details.querySelector('p').innerText, ulist = [];
+                    ulist = [];
 
 
             if (details !== null) {
@@ -35,7 +45,7 @@
                 document.querySelectorAll('.chapters-section a[href*="/read/"]').forEach(el => {
 
                     if (!ulist.includes(el.href)) {
-                        chapterList.push(new Chapter(el.href, el.querySelector('h5.chapter-link').innerText));
+                        chapterList.push(new Chapter(el.href, el.querySelector('h5.chapter-link').innerText, getImageList));
                         ulist.push(el.href);
                     }
 
@@ -48,7 +58,7 @@
                         href = location.href;
                     }
                     if (!ulist.includes(href)) {
-                        chapterList.push((chap = new Chapter(href, el.innerText, current)));
+                        chapterList.push((chap = new Chapter(href, el.innerText, getImageList)));
                         ulist.push(href);
                     }
 
@@ -63,7 +73,7 @@
 
             }
 
-            return new Manga(title, description, chapterList);
+            return new Manga(title, chapterList);
 
 
         }
@@ -76,7 +86,7 @@
                 title = details !== null ?
                 details.querySelector('h1.entry-title').innerText :
                 isChapter.querySelector('.headpost .allc a').innerText,
-                description = details === null ? '' : details.querySelector('.entry-content-single').innerText, ulist = [];
+                ulist = [];
 
 
         if (details !== null) {
@@ -92,7 +102,7 @@
 
                 let href = el.value, current = el.selected === true, chap;
                 if (!ulist.includes(href)) {
-                    chapterList.push((chap = new Chapter(href, el.innerText, current)));
+                    chapterList.push((chap = new Chapter(href, el.innerText)));
                     ulist.push(href);
                 }
 
@@ -105,17 +115,13 @@
 
         }
 
-        return new Manga(title, description, chapterList);
+        return new Manga(title, chapterList);
 
     })();
 
-    function getImages(html){
 
 
 
-
-
-    }
 
 
     function downloadChapter(selection, ui){
@@ -127,23 +133,9 @@
 
             selection.forEach(chapter => {
 
-                fetch(chapter.url, {
-                    referrer: chapter.url
-                }).then(resp => resp.text()).then(txt => html2doc(txt)).then(doc => {
-
-                    let images = [];
-
-                    doc.querySelectorAll('.main-container img[src*="img.asurascans.com"], #readerarea img.aligncenter')
-                            .forEach(img => images.push(img.src));
-
-                    chapter.images = images;
+                chapter.getImages().then(console.debug);
 
 
-
-
-
-
-                });
 
 
 
@@ -160,8 +152,8 @@
 
         if (currentChapter !== null) {
             menu.addItem('Download ' + currentChapter.label, () => {
-                Overlay.downloadSelection(series, currentChapter).then(instance => {
-                    downloadChapter([currentChapter], instance);
+                Overlay.downloadSelection(series, currentChapter).then(ui => {
+                    downloadChapter([currentChapter], ui);
                 });
             });
         }
@@ -169,7 +161,7 @@
         menu.addItem('Download Manga', () => {
             Overlay.getSelection(series).then(sel => {
                 Overlay.downloadSelection(series, sel).then(ui => {
-                    downloadChapter(sel, instance);
+                    downloadChapter(sel, ui);
 
                 });
             });
