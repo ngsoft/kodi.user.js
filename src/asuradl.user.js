@@ -8,7 +8,7 @@
 
     const {Overlay} = root.asuraui;
     const {Manga, Chapter} = root.mangas;
-    const {html2doc} = utils;
+    const {html2doc, createElement} = utils;
 
     let isBeta = /^beta/.test(location.host), currentChapter = null;
 
@@ -92,7 +92,7 @@
         if (details !== null) {
             document.querySelectorAll('#chapterlist .chbox a').forEach(el => {
                 if (!ulist.includes(el.href)) {
-                    chapterList.push(new Chapter(el.href, el.querySelector('.chapternum').innerText));
+                    chapterList.push(new Chapter(el.href, el.querySelector('.chapternum').innerText, getImageList));
                     ulist.push(el.href);
                 }
 
@@ -102,7 +102,7 @@
 
                 let href = el.value, current = el.selected === true, chap;
                 if (!ulist.includes(href)) {
-                    chapterList.push((chap = new Chapter(href, el.innerText)));
+                    chapterList.push((chap = new Chapter(href, el.innerText, getImageList)));
                     ulist.push(href);
                 }
 
@@ -133,7 +133,24 @@
 
             selection.forEach(chapter => {
 
-                chapter.getImages().then(console.debug);
+                chapter.getPDF().then(pdfdata => {
+
+                    let
+                            blob = new Blob([pdfdata]),
+                            fileName = chapter.label + '.pdf',
+                            url = URL.createObjectURL(blob),
+                            a = createElement('a', {href: url, download: fileName, style: 'visibility: hidden;'});
+
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+
+                    current++;
+                    progressbar.current = current;
+
+
+
+                });
 
 
 
