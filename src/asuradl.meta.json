@@ -1,13 +1,12 @@
 {
     "name": "AsuraScans Downloader",
-    "description": "Download Mangas",
+    "description": "Download AsuraScans Mangas",
     "author": "Aymeric Anger",
     "namespace": "https://github.com/ngsoft/kodi.user.js",
     "noframes": true,
     "grant": [
         "GM_registerMenuCommand",
         "GM_unregisterMenuCommand",
-        "GM_addStyle",
         "GM_getResourceURL",
         "GM_xmlhttpRequest"
     ],
