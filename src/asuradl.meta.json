@@ -16,7 +16,8 @@
     },
     "require": [
         "https://cdn.jsdelivr.net/npm/pdf-lib@latest/dist/pdf-lib.min.js",
-        "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"
+        "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js",
+        "https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"
     ],
     "module": [
         "asuraui"

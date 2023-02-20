@@ -133,24 +133,14 @@
 
             selection.forEach(chapter => {
 
-                chapter.getPDF().then(pdfdata => {
+                chapter.getPDF().then(pdf => {
 
-                    let
-                            blob = new Blob([pdfdata]),
-                            fileName = chapter.label + '.pdf',
-                            url = URL.createObjectURL(blob),
-                            a = createElement('a', {href: url, download: fileName, style: 'visibility: hidden;'});
-
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-
-                    current++;
-                    progressbar.current = current;
+                    console.debug(pdf);
 
 
 
                 });
+
 
 
 
