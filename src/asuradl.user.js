@@ -10,6 +10,7 @@
     const {Manga, Chapter} = root.mangas;
     const {html2doc, createElement} = utils;
 
+
     let isBeta = /^beta/.test(location.host), currentChapter = null;
 
 
@@ -19,6 +20,24 @@
         doc.querySelectorAll('.main-container img[src*="img.asurascans.com"], #readerarea img.aligncenter')
                 .forEach(img => images.push(img.src));
         return images;
+    }
+
+
+    function downloadFile(body, filename, extension){
+        let
+                blob = new Blob([body]),
+                fileName = `${filename}.${extension}`,
+                href = URL.createObjectURL(blob),
+                a = createElement('a', {
+                    href: href,
+                    download: fileName,
+                    style: 'visibility: hidden'
+                });
+        
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
     }
 
 
@@ -134,18 +153,10 @@
             selection.forEach(chapter => {
 
                 chapter.getPDF().then(pdf => {
-
-                    console.debug(pdf);
-
-
-
+                    downloadFile(pdf, chapter.label, 'pdf');
+                    current++;
+                    progressbar.current = current;
                 });
-
-
-
-
-
-
 
             });
         });
