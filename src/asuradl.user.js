@@ -16,8 +16,7 @@
 
     function getImageList(doc){
         let images = [];
-
-        doc.querySelectorAll('.main-container img[src*="img.asurascans.com"], #readerarea img.aligncenter')
+        doc.querySelectorAll('.main-container img[src*="img.asurascans.com"], #readerarea img')
                 .forEach(img => images.push(img.src));
         return images;
     }
@@ -145,7 +144,7 @@
 
     function downloadChapter(selection, ui){
         return new Promise((resolve, reject) => {
-            console.debug(selection);
+
             let tot = selection.length, progressbar = ui.progressbar, current = 0;
 
             progressbar.total = tot;
@@ -153,6 +152,7 @@
             selection.forEach(chapter => {
 
                 chapter.getPDF().then(pdf => {
+
                     downloadFile(pdf, chapter.label, 'pdf');
                     current++;
                     progressbar.current = current;
