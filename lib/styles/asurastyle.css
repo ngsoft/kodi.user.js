@@ -12,6 +12,3 @@
     background: var(--header-hover-back-color);
 }
 
-progress.inline{
-    width: 80%;
-}

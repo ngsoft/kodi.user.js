@@ -6,7 +6,7 @@
 
     const {PDFDocument} = PDFLib;
 
-    const {Overlay} = root.asuraui;
+    const {Overlay, ProgressBar} = root.asuraui;
     const {Manga, Chapter} = root.mangas;
     const {html2doc, createElement} = utils;
 
@@ -145,17 +145,26 @@
     function downloadChapter(selection, ui){
         return new Promise((resolve, reject) => {
 
-            let tot = selection.length, progressbar = ui.progressbar, current = 0;
+            let tot = selection.length, mainprogressbar = ui.progressbar, current = 0;
 
-            progressbar.total = tot;
+            mainprogressbar.total = tot;
 
             selection.forEach(chapter => {
 
-                chapter.getPDF().then(pdf => {
+
+                let progress = new ProgressBar(ui.tabmanager.tabs.download.querySelector('.row'), chapter.label);
+
+                progress.on('progress.complete', e => {
+                    e.detail.remove();
+                });
+
+                chapter.getPDF(progress).then(pdf => {
 
                     downloadFile(pdf, chapter.label, 'pdf');
                     current++;
-                    progressbar.current = current;
+                    mainprogressbar.current = current;
+                }).catch(() => {
+                    progress.fail();
                 });
 
             });
