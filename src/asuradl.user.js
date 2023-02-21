@@ -189,10 +189,10 @@
             let
                     tot = selection.length,
                     mainprogressbar = ui.progressbar,
+                    root = mainprogressbar.elements.root,
                     current = 0,
                     success = [],
-                    failed = [],
-                    last = null;
+                    failed = [];
 
 
             mainprogressbar.total = tot;
@@ -228,12 +228,16 @@
 
                 queue.addPromise(() => {
 
-                    let progress = new ProgressBar(ui.tabmanager.tabs.download.querySelector('.row'), chapter.label);
+                    let progress = new ProgressBar(root, chapter.label, false);
+
+
+                    root.insertBefore(progress.elements.container, mainprogressbar.elements.container.nextElementSibling);
+
 
                     progress.on('progress.complete', e => {
                         setTimeout(() => {
                             e.detail.remove();
-                        }, 2000);
+                        }, 1000);
 
                     });
 
