@@ -237,7 +237,7 @@
 
                     });
 
-                    chapter.getPDF(progress).then(pdf => {
+                    return chapter.getPDF(progress).then(pdf => {
 
                         downloadFile(pdf, chapter.label, 'pdf');
                         current++;
