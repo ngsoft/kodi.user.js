@@ -192,7 +192,7 @@
                     current = 0,
                     success = [],
                     failed = [],
-                    i;
+                    last = null;
 
 
             mainprogressbar.total = tot;
@@ -221,12 +221,13 @@
             const queue = new ConcurrentPromiseQueue({maxNumberOfConcurrentPromises: qlength});
 
 
-            for (i = 0; i < selection.length; i++) {
+            for (let i = 0; i < selection.length; i++) {
 
                 let chapter = selection[i];
 
 
                 queue.addPromise(() => {
+
                     let progress = new ProgressBar(ui.tabmanager.tabs.download.querySelector('.row'), chapter.label);
 
                     progress.on('progress.complete', e => {
@@ -236,7 +237,7 @@
 
                     });
 
-                    return chapter.getPDF(progress).then(pdf => {
+                    chapter.getPDF(progress).then(pdf => {
 
                         downloadFile(pdf, chapter.label, 'pdf');
                         current++;
@@ -254,10 +255,6 @@
             }
 
 
-            /*   Promise.all(tasks)
-                    .then(result => {
-                        console.debug(result);
-                    });*/
 
         });
     }
