@@ -8,7 +8,8 @@
 
     const {Overlay, ProgressBar} = root.asuraui;
     const {Manga, Chapter, handleFetchError} = root.mangas;
-    const {html2doc, createElement} = utils;
+    const {html2doc, createElement, uniqid} = utils;
+    const {ConcurrentPromiseQueue} = root.cpromise;
 
     const {fetch} = gmfetch;
 
@@ -180,10 +181,19 @@
 
 
 
-    function downloadChapter(selection, ui){
+
+
+    function downloadChapter(selection, ui, qlength = 5){
         return new Promise((resolve, reject) => {
 
-            let tot = selection.length, mainprogressbar = ui.progressbar, current = 0, success = [], failed = [];
+            let
+                    tot = selection.length,
+                    mainprogressbar = ui.progressbar,
+                    current = 0,
+                    success = [],
+                    failed = [],
+                    i;
+
 
             mainprogressbar.total = tot;
 
@@ -195,6 +205,8 @@
             }
 
 
+
+
             let interval = setInterval(() => {
                 if (success.length + failed.length === tot) {
 
@@ -203,36 +215,50 @@
                     resolve({success: success, failed: failed});
 
                 }
-            }, 1000);
+            }, 100);
 
 
+            const queue = new ConcurrentPromiseQueue({maxNumberOfConcurrentPromises: qlength});
 
-            selection.forEach(chapter => {
+
+            for (i = 0; i < selection.length; i++) {
+
+                let chapter = selection[i];
 
 
-                let progress = new ProgressBar(ui.tabmanager.tabs.download.querySelector('.row'), chapter.label);
+                queue.addPromise(() => {
+                    let progress = new ProgressBar(ui.tabmanager.tabs.download.querySelector('.row'), chapter.label);
 
-                progress.on('progress.complete', e => {
-                    setTimeout(()=>{
-                        e.detail.remove();
-                    }, 2000);
+                    progress.on('progress.complete', e => {
+                        setTimeout(() => {
+                            e.detail.remove();
+                        }, 2000);
 
+                    });
+
+                    return chapter.getPDF(progress).then(pdf => {
+
+                        downloadFile(pdf, chapter.label, 'pdf');
+                        current++;
+                        mainprogressbar.current = current;
+
+                        success.push(chapter);
+
+                    }).catch(() => {
+                        progress.fail();
+                        failed.push(chapter);
+                    });
                 });
 
-                chapter.getPDF(progress).then(pdf => {
 
-                    downloadFile(pdf, chapter.label, 'pdf');
-                    current++;
-                    mainprogressbar.current = current;
+            }
 
-                    success.push(chapter);
 
-                }).catch(() => {
-                    progress.fail();
-                    failed.push(chapter);
-                });
+            /*   Promise.all(tasks)
+                    .then(result => {
+                        console.debug(result);
+                    });*/
 
-            });
         });
     }
 
@@ -244,10 +270,13 @@
 
         if (currentChapter !== null) {
             menu.addItem('Download ' + currentChapter.label, () => {
-                Overlay.downloadSelection(series, currentChapter).then(ui => {
-                    downloadChapter([currentChapter], ui);
-                });
-                menu.removeItem('chapdl');
+                if (!downloading) {
+                    Overlay.downloadSelection(series, currentChapter).then(ui => {
+                        downloadChapter([currentChapter], ui);
+                    });
+                    menu.removeItem('chapdl');
+                }
+
             }, 'chapdl');
         }
         

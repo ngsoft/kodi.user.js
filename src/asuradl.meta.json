@@ -20,7 +20,8 @@
         "https://cdn.jsdelivr.net/npm/pdf-lib@latest/dist/pdf-lib.min.js"
     ],
     "module": [
-        "asuraui"
+        "asuraui",
+        "cpromise"
     ],
     "include": [
         "/^https?:\\/\\/beta\\.asurascans\\.\\w+\\/(comics|read)\\//",
