@@ -207,6 +207,11 @@
 
 
 
+            function endDownload(){
+                downloading = false;
+                resolve({success: success, failed: failed});
+            }
+
 
             let interval = setInterval(() => {
                 if (success.length + failed.length === tot) {
@@ -215,19 +220,17 @@
 
                     if (zip) {
 
-                        console.debug(zip);
                         zip.generateAsync({type: "blob"}).then(function(content){
-
-                            console.debug(content);
-                            // store zip in button for reDownload
                             downloadFile(content, series.title.trim(), "zip");
-                        }).catch(console.debug);
+                            endDownload();
+                        });
 
 
+                    } else {
+                        endDownload();
                     }
 
-                    downloading = false;
-                    resolve({success: success, failed: failed});
+
 
                 }
             }, 100);
@@ -266,12 +269,10 @@
 
                     return chapter.getPDF(progress).then(pdf => {
 
-                        console.debug(pdf);
 
                         if (!zip) {
                             downloadFile(pdf, chapter.label, 'pdf');
                         } else {
-
                             folder.file(chapter.label + '.pdf', pdf, {base64: true});
                         }
 
