@@ -32,6 +32,10 @@
                     download: fileName,
                     style: 'visibility: hidden'
                 });
+
+        setTimeout(() => {
+            URL.revokeObjectURL(href);
+        }, 15000);
         
         document.body.appendChild(a);
         a.click();
@@ -145,20 +149,23 @@
     function downloadChapter(selection, ui){
         return new Promise((resolve, reject) => {
 
-            let tot = selection.length, mainprogressbar = ui.progressbar, current = 0;
+            let tot = selection.length, mainprogressbar = ui.progressbar, current = 0, success = 0, failed = 0;
 
             mainprogressbar.total = tot;
+
+
             if (tot > 0) {
                 downloading = true;
             }
+
+
+
             selection.forEach(chapter => {
 
 
                 let progress = new ProgressBar(ui.tabmanager.tabs.download.querySelector('.row'), chapter.label);
 
                 progress.on('progress.complete', e => {
-
-                    downloading = false;
                     setTimeout(()=>{
                         e.detail.remove();
                     }, 2000);
@@ -170,8 +177,17 @@
                     downloadFile(pdf, chapter.label, 'pdf');
                     current++;
                     mainprogressbar.current = current;
+                    if(progress.current === 0) {
+                        progress.current = progress.total;
+                    }
+                    success++;
+
                 }).catch(() => {
                     progress.fail();
+
+
+
+                    failed++;
                 });
 
             });
