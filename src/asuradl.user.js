@@ -11,7 +11,7 @@
     const {html2doc, createElement} = utils;
 
 
-    let isBeta = /^beta/.test(location.host), currentChapter = null;
+    let isBeta = /^beta/.test(location.host), currentChapter = null, downloading = false;
 
 
     function getImageList(doc){
@@ -148,16 +148,20 @@
             let tot = selection.length, mainprogressbar = ui.progressbar, current = 0;
 
             mainprogressbar.total = tot;
-
+            if (tot > 0) {
+                downloading = true;
+            }
             selection.forEach(chapter => {
 
 
                 let progress = new ProgressBar(ui.tabmanager.tabs.download.querySelector('.row'), chapter.label);
 
                 progress.on('progress.complete', e => {
+
+                    downloading = false;
                     setTimeout(()=>{
                         e.detail.remove();
-                    }, 5000);
+                    }, 2000);
 
                 });
 
@@ -187,14 +191,30 @@
                 });
             });
         }
+        
+        
+        Overlay.getInstance(series).hide().then(ui => {
+            ui.on('chapter.selected', e => {
+
+                if (!downloading) {
+                    let sel = e.detail;
+                    Overlay.downloadSelection(series, sel).then(ui => {
+                        downloadChapter(sel, ui);
+                    });
+                }
+
+            });
+        });
+
+
+
 
         menu.addItem('Download Manga', () => {
-            Overlay.getSelection(series).then(sel => {
-                Overlay.downloadSelection(series, sel).then(ui => {
-                    downloadChapter(sel, ui);
+            
+            if(! downloading){
+                Overlay.getSelection(series);
+            }
 
-                });
-            });
 
         });
     }
