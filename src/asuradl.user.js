@@ -7,8 +7,10 @@
     const {PDFDocument} = PDFLib;
 
     const {Overlay, ProgressBar} = root.asuraui;
-    const {Manga, Chapter} = root.mangas;
+    const {Manga, Chapter, handleFetchError} = root.mangas;
     const {html2doc, createElement} = utils;
+
+    const {fetch} = gmfetch;
 
 
     let isBeta = /^beta/.test(location.host), currentChapter = null, downloading = false;
@@ -41,6 +43,33 @@
         a.click();
         document.body.removeChild(a);
 
+    }
+
+
+    async function searchBeta(query){
+
+        if (!query) {
+            throw new Error('invalid query');
+        }
+
+        let src = new URL('https://www.asurascans.com/');
+
+        src.searchParams.set('s', query);
+
+        let doc = await fetch(src)
+                .then(handleFetchError)
+                .then(resp => resp.text())
+                .then(txt => html2doc(txt));
+
+        let results = [];
+
+
+        doc.querySelectorAll('.listupd a').forEach(a => {
+            results.push(a);
+        });
+
+
+        return results;
     }
 
 
@@ -95,7 +124,7 @@
 
             }
 
-            return new Manga(title, chapterList, true);
+            return new Manga(title, chapterList, true, searchBeta);
         }
 
         let
