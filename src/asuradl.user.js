@@ -64,8 +64,12 @@
         let results = [];
 
 
-        doc.querySelectorAll('.listupd a').forEach(a => {
-            results.push(a);
+        doc.querySelectorAll('.listupd a[title]').forEach(a => {
+            results.push({
+                title: a.title,
+                href: a.href,
+                cover: a.querySelector('img').src
+            });
         });
 
 
