@@ -192,7 +192,8 @@
                     root = mainprogressbar.elements.root,
                     current = 0,
                     success = [],
-                    failed = [];
+                    failed = [],
+                    zip, folder;
 
 
             mainprogressbar.total = tot;
@@ -211,6 +212,20 @@
                 if (success.length + failed.length === tot) {
 
                     clearInterval(interval);
+
+                    if (zip) {
+
+                        console.debug(zip);
+                        zip.generateAsync({type: "blob"}).then(function(content){
+
+                            console.debug(content);
+                            // store zip in button for reDownload
+                            downloadFile(content, series.title.trim(), "zip");
+                        }).catch(console.debug);
+
+
+                    }
+
                     downloading = false;
                     resolve({success: success, failed: failed});
 
@@ -219,6 +234,14 @@
 
 
             const queue = new ConcurrentPromiseQueue({maxNumberOfConcurrentPromises: qlength});
+
+            if (selection.zip) {
+
+                zip = new JSZip();
+                folder = zip.folder(series.title.trim());
+
+
+            }
 
 
             for (let i = 0; i < selection.length; i++) {
@@ -243,7 +266,15 @@
 
                     return chapter.getPDF(progress).then(pdf => {
 
-                        downloadFile(pdf, chapter.label, 'pdf');
+                        console.debug(pdf);
+
+                        if (!zip) {
+                            downloadFile(pdf, chapter.label, 'pdf');
+                        } else {
+
+                            folder.file(chapter.label + '.pdf', pdf, {base64: true});
+                        }
+
                         current++;
                         mainprogressbar.current = current;
 
