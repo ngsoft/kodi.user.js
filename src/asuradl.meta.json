@@ -11,7 +11,8 @@
         "GM_xmlhttpRequest"
     ],
     "resource": {
-        "overlay": "/lib/styles/gmoverlay.css"
+        "overlay": "/lib/styles/gmoverlay.css",
+        "asurastyle": "/lib/styles/asurastyle.css"
     },
     "require": [
         "https://cdn.jsdelivr.net/npm/pdf-lib@latest/dist/pdf-lib.min.js"

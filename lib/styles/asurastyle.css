@@ -1,0 +1,17 @@
+:root {
+    --button-hover-back-color: linear-gradient(180deg,#7334ae,#3e0251);
+}
+[hidden], template {
+    display: none !important;
+}
+[data-tab][data-selected].button, button[disabled], .button[disabled]{
+    pointer-events: none;
+    cursor:pointer !important;
+}
+[data-tab][data-selected].button{
+    background: var(--header-hover-back-color);
+}
+
+progress.inline{
+    width: 80%;
+}
