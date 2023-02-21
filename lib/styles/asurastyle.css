@@ -1,3 +1,6 @@
+
+@import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
 :root {
     --button-hover-back-color: linear-gradient(180deg,#7334ae,#3e0251);
 }
@@ -12,3 +15,6 @@
     background: var(--header-hover-back-color);
 }
 
+html, *{
+    font-family: 'PT Sans', sans-serif;
+}

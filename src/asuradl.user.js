@@ -169,7 +169,9 @@
 
         }
 
-        return new Manga(title, chapterList);
+
+
+        return new Manga(title, chapterList.reverse());
 
     })();
 
