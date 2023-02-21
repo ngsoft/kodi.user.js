@@ -155,7 +155,12 @@
                 let progress = new ProgressBar(ui.tabmanager.tabs.download.querySelector('.row'), chapter.label);
 
                 progress.on('progress.complete', e => {
-                    e.detail.remove();
+                    setTimeout(()=>{
+                        e.detail.remove();
+                    }, 5000);
+
+                }).on('progress.change', e => {
+                    console.debug(e);
                 });
 
                 chapter.getPDF(progress).then(pdf => {
