@@ -149,14 +149,27 @@
     function downloadChapter(selection, ui){
         return new Promise((resolve, reject) => {
 
-            let tot = selection.length, mainprogressbar = ui.progressbar, current = 0, success = 0, failed = 0;
+            let tot = selection.length, mainprogressbar = ui.progressbar, current = 0, success = [], failed = [];
 
             mainprogressbar.total = tot;
 
 
             if (tot > 0) {
                 downloading = true;
+            } else {
+                return reject(new Error('selection is empty'));
             }
+
+
+            let interval = setInterval(() => {
+                if (success.length + failed.length === tot) {
+
+                    clearInterval(interval);
+                    downloading = false;
+                    resolve({success: success, failed: failed});
+
+                }
+            }, 1000);
 
 
 
@@ -177,17 +190,12 @@
                     downloadFile(pdf, chapter.label, 'pdf');
                     current++;
                     mainprogressbar.current = current;
-                    if(progress.current === 0) {
-                        progress.current = progress.total;
-                    }
-                    success++;
+
+                    success.push(chapter);
 
                 }).catch(() => {
                     progress.fail();
-
-
-
-                    failed++;
+                    failed.push(chapter);
                 });
 
             });
@@ -205,7 +213,8 @@
                 Overlay.downloadSelection(series, currentChapter).then(ui => {
                     downloadChapter([currentChapter], ui);
                 });
-            });
+                menu.removeItem('chapdl');
+            }, 'chapdl');
         }
         
         
