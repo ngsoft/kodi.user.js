@@ -95,10 +95,9 @@
 
             }
 
-            return new Manga(title, chapterList);
-
-
+            return new Manga(title, chapterList, true);
         }
+
         let
                 details = document.querySelector('.infox'),
                 isChapter = document.querySelector('.chapterbody .postarea article');
