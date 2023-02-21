@@ -159,8 +159,6 @@
                         e.detail.remove();
                     }, 5000);
 
-                }).on('progress.change', e => {
-                    console.debug(e);
                 });
 
                 chapter.getPDF(progress).then(pdf => {
