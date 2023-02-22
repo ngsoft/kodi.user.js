@@ -218,6 +218,11 @@
 
                     clearInterval(interval);
 
+                    if (failed.length > 0) {
+                        mainprogressbar.trigger('progress.fail', failed);
+
+                    }
+
                     if (zip) {
 
                         zip.generateAsync({type: "blob"}).then(function(content){
