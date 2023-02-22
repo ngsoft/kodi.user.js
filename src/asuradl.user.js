@@ -196,6 +196,8 @@
                     zip, folder;
 
 
+            mainprogressbar.label = 'Download Queue';
+
             mainprogressbar.total = tot;
 
 
@@ -207,7 +209,11 @@
 
 
 
+
+
             function endDownload(){
+
+                mainprogressbar.label = 'Download complete'
                 downloading = false;
                 resolve({success: success, failed: failed});
             }
@@ -225,8 +231,12 @@
 
                     if (zip) {
 
+
+                        mainprogressbar.label = 'Creating: ' + series.title.trim() + '.zip';
+
                         zip.generateAsync({type: "blob"}).then(function(content){
                             downloadFile(content, series.title.trim(), "zip");
+                            mainprogressbar.current++;
                             endDownload();
                         });
 
@@ -247,8 +257,7 @@
 
                 zip = new JSZip();
                 folder = zip.folder(series.title.trim());
-
-
+                mainprogressbar.total = tot + 1;
             }
 
 
