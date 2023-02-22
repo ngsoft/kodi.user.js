@@ -281,7 +281,8 @@
 
                         success.push(chapter);
 
-                    }).catch(() => {
+                    }).catch(err => {
+                        console.error(err);
                         progress.fail();
                         failed.push(chapter);
                     });
