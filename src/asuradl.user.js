@@ -259,7 +259,7 @@
 
                 queue.addPromise(() => {
 
-                    let progress = new ProgressBar(root, chapter.label, false);
+                    let progress = new ProgressBar(root, chapter.label + '.pdf', false);
 
 
                     root.insertBefore(progress.elements.container, mainprogressbar.elements.container.nextElementSibling);
