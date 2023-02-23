@@ -76,7 +76,8 @@ class ModuleHelper implements IteratorAggregate
 
     private function build(): string
     {
-        if ( ! empty($this->lastBuild)) return $this->lastBuild;
+        if ( ! empty($this->lastBuild))
+        { return $this->lastBuild; }
         $result = '';
         foreach ($this->getIterator() as $module)
         {
