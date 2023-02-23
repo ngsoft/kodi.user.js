@@ -117,6 +117,9 @@ foreach ($sources as $dir)
         printf("Saving '%s'\n", $destScript);
         if (file_put_contents($destScript, $contents) !== false)
         {
+
+            printf("Saving '%s/%s'\n", $destination, $fileName->getModuleScript());
+            file_put_contents($destination . DIRECTORY_SEPARATOR . $fileName->getModuleScript(), $helper->getCode(true));
             printf("Saving '%s/%s'\n", $destination, $fileName->getMetaScript());
             file_put_contents($destination . DIRECTORY_SEPARATOR . $fileName->getMetaScript(), $comment);
             $minFile = $fileName->getName() . '.min.user.js';
