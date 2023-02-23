@@ -7,7 +7,8 @@ namespace NGSOFT\Userscript;
 use IteratorAggregate,
     JShrink\Minifier;
 
-class ModuleHelper implements IteratorAggregate {
+class ModuleHelper implements IteratorAggregate
+{
 
     /** @var array<string,Module> */
     private $modules = [];
@@ -18,7 +19,8 @@ class ModuleHelper implements IteratorAggregate {
     /** @var string */
     private $lastBuild = '';
 
-    public static function minifyCode(string $code) {
+    public static function minifyCode(string $code)
+    {
         return Minifier::minify($code);
     }
 
@@ -29,7 +31,8 @@ class ModuleHelper implements IteratorAggregate {
      * @param string $fileName
      * @return Module
      */
-    public function addModule(string $fileName) {
+    public function addModule(string $fileName)
+    {
         $instance = new Module($fileName);
         $this->modules[$instance->getName()] = $instance;
         $this->sortModules();
@@ -40,11 +43,13 @@ class ModuleHelper implements IteratorAggregate {
      *
      * @return Module[]
      */
-    public function toArray(): array {
+    public function toArray(): array
+    {
         return $this->sorted;
     }
 
-    public function getCode(bool $minify = false): string {
+    public function getCode(bool $minify = false): string
+    {
         $code = $this->build();
         return $minify ? static::minifyCode($code) : $code;
     }
@@ -52,13 +57,16 @@ class ModuleHelper implements IteratorAggregate {
     ////////////////////////////   Utils   ////////////////////////////
 
 
-    private function sortModules() {
+    private function sortModules()
+    {
         $this->lastBuild = '';
         $sorted = &$this->sorted;
         $sorted = [];
         $loaded = [];
-        foreach ($this->modules as $mod) {
-            foreach ($mod as $name => $module) {
+        foreach ($this->modules as $mod)
+        {
+            foreach ($mod as $name => $module)
+            {
                 if (isset($loaded[$name])) continue;
                 $loaded[$name] = $name;
                 $sorted[] = $module;
@@ -66,10 +74,12 @@ class ModuleHelper implements IteratorAggregate {
         }
     }
 
-    private function build(): string {
-        if (!empty($this->lastBuild)) return $this->lastBuild;
+    private function build(): string
+    {
+        if ( ! empty($this->lastBuild)) return $this->lastBuild;
         $result = '';
-        foreach ($this->getIterator() as $module) {
+        foreach ($this->getIterator() as $module)
+        {
             $result .= (string) $module;
             $result .= "\n";
         }
@@ -81,13 +91,16 @@ class ModuleHelper implements IteratorAggregate {
     /**
      * @return \Generator<string,Module>
      */
-    public function getIterator() {
-        foreach ($this->sorted as $module) {
+    public function getIterator()
+    {
+        foreach ($this->sorted as $module)
+        {
             yield $module->getName() => $module;
         }
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return $this->build();
     }
 

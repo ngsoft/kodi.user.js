@@ -112,7 +112,7 @@ foreach ($sources as $dir)
             $moduleFile = "$modulePath/$moduleName.js";
             $helper->addModule($moduleFile);
         }
-        $contents .= $helper->getCode();
+        $contents .= $helper->getCode(true);
         $contents .= file_get_contents("$dirName/" . $fileName->getUserScript());
         printf("Saving '%s'\n", $destScript);
         if (file_put_contents($destScript, $contents) !== false)
