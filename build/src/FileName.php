@@ -8,29 +8,41 @@ use JsonSerializable,
     RuntimeException,
     Stringable;
 
-class FileName extends Named implements JsonSerializable, Stringable {
+class FileName extends Named implements JsonSerializable, Stringable
+{
 
-    public function __construct(string $name) {
+    public function __construct(string $name)
+    {
         $name = preg_replace('#.(meta|user).js\w*?$#', '', $name);
-        if (!preg_match('/[\w\-]+/', $name)) {
+        if ( ! preg_match('/[\w\-]+/', $name))
+        {
             throw new RuntimeException('Invalid name: ' . $name);
         }
         parent::__construct($name);
     }
 
-    public function getUserScript(): string {
+    public function getModuleScript(): string
+    {
+        return sprintf('%s.modules.js', $this->name);
+    }
+
+    public function getUserScript(): string
+    {
         return sprintf('%s.user.js', $this->name);
     }
 
-    public function getMetaScript(): string {
+    public function getMetaScript(): string
+    {
         return sprintf('%s.meta.js', $this->name);
     }
 
-    public function getMetaJson(): string {
+    public function getMetaJson(): string
+    {
         return sprintf('%s.meta.json', $this->name);
     }
 
-    public function toArray(): array {
+    public function toArray(): array
+    {
 
         return [
             'name' => $this->getName(),
@@ -42,15 +54,18 @@ class FileName extends Named implements JsonSerializable, Stringable {
         ];
     }
 
-    public function jsonSerialize() {
+    public function jsonSerialize()
+    {
         return $this->toArray();
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return $this->getUserScript();
     }
 
-    public function __debugInfo() {
+    public function __debugInfo()
+    {
         return $this->toArray();
     }
 
