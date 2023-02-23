@@ -31,6 +31,11 @@ class FileName extends Named implements JsonSerializable, Stringable
         return sprintf('%s.user.js', $this->name);
     }
 
+    public function getMinUserScript(): string
+    {
+        return sprintf('%s.min.user.js', $this->name);
+    }
+
     public function getMetaScript(): string
     {
         return sprintf('%s.meta.js', $this->name);
