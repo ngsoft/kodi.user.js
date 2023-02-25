@@ -11,7 +11,7 @@
     const {html2doc, createElement, uniqid} = utils;
     const {ConcurrentPromiseQueue} = root.cpromise;
 
-    const {fetch} = gmfetch;
+    const {fetch} = root['tamper-fetch'];
 
 
     let isBeta = /^beta/.test(location.host), currentChapter = null, downloading = false;
