@@ -19,7 +19,7 @@
 
     function getImageList(doc){
         let images = [];
-        doc.querySelectorAll('.main-container img[src*="img.asurascans.com"], #readerarea img')
+        doc.querySelectorAll('.main-container img[src*="img.asurascans.com"], #readerarea img[decoding]')
                 .forEach(img => images.push(img.src));
         return images;
     }
@@ -317,7 +317,7 @@
     if (series) {
 
         if (currentChapter !== null) {
-            menu.addItem('Download ' + currentChapter.label, () => {
+            menu.addItem('Download current chapter', () => {
                 if (!downloading) {
                     Overlay.downloadSelection(series, currentChapter).then(ui => {
                         downloadChapter([currentChapter], ui);
@@ -345,14 +345,14 @@
 
 
 
-        menu.addItem('Download Manga', () => {
+        menu.addItem('Download current manga', () => {
             
             if(! downloading){
                 Overlay.getSelection(series);
             }
 
 
-        });
+        }, 'mangadl');
     }
 
 
