@@ -23,7 +23,6 @@
         "https://cdn.jsdelivr.net/npm/jszip@3.1.5/dist/jszip.min.js"
     ],
     "module": [
-        "finder",
         "asuraui",
         "cpromise"
     ],
