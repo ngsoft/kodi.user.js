@@ -192,8 +192,7 @@
                     root = mainprogressbar.elements.root,
                     current = 0,
                     success = [],
-                    failed = [],
-                    numParts;
+                    failed = [];
 
 
             mainprogressbar.label = 'Download Queue';
@@ -209,8 +208,6 @@
 
 
 
-
-
             function endDownload(){
 
                 mainprogressbar.label = 'Download complete'
@@ -219,24 +216,6 @@
             }
 
 
-            let interval = setInterval(() => {
-                if (success.length + failed.length === tot) {
-
-                    clearInterval(interval);
-
-                    if (failed.length > 0) {
-                        mainprogressbar.trigger('progress.fail', failed);
-
-                    }
-                    endDownload();
-                    
-                    
-                    
-
-
-
-                }
-            }, 100);
 
 
             const queue = new ConcurrentPromiseQueue({maxNumberOfConcurrentPromises: qlength});
@@ -244,7 +223,7 @@
             if (selection.zip) {
 
 
-                parts = parseInt(Math.ceil(tot / chaptersPerZip));
+                let numParts = parseInt(Math.ceil(tot / chaptersPerZip));
 
 
                 mainprogressbar.total = tot + numParts;
@@ -253,23 +232,21 @@
                     
                     
                     let num = i + 1, filename = series.title.trim();
+                    
+                    
                     if (numParts > 1) {
                         filename += '.part' + num;
                     }
 
 
-                    let zip = new JSZip(), folder = zip.folder(series.title.trim());
+                    let zip = new JSZip(), folder = zip.folder(series.title.trim()), lst = [];
 
 
 
 
 
                     selection.slice(i * chaptersPerZip, (i * chaptersPerZip) + chaptersPerZip).forEach(chapter => {
-                        //folder.file(chapter.label + '.pdf', pdf, {base64: true});
 
-                        console.debug(chapter);
-
-                        let lst = [];
 
                         lst.push(queue.addPromise(() => {
 
@@ -279,7 +256,7 @@
                             root.insertBefore(progress.elements.container, mainprogressbar.elements.container.nextElementSibling);
 
 
-                            progress.on('progress.complete', e => {
+                            progress.one('progress.complete', e => {
                                 setTimeout(() => {
                                     e.detail.remove();
                                 }, 1000);
@@ -300,21 +277,35 @@
                             });
                         }));
 
-                        Promise.all(lst).finally(() => {
 
 
-                            mainprogressbar.label = 'Creating: ' + filename + '.zip';
+                    });
 
-                            zip.generateAsync({type: "blob"}).then(function(content){
-                                downloadFile(content, filename, "zip");
-                                mainprogressbar.current++;
-                            });
+                    Promise.allSettled(lst).then(() => {
+
+
+                        mainprogressbar.label = 'Creating: ' + filename + '.zip';
+
+                        zip.generateAsync({type: "blob"}).then(function(content){
+                            downloadFile(content, filename, "zip");
+                            mainprogressbar.label = 'Download Queue';
+                            mainprogressbar.current++;
+                        }).catch (error=>{
+                            console.error(error);
+                            mainprogressbar.label = 'Download Queue';
+
+                        }).finally(() => {
+
+                            if (success.length + failed.length === tot) {
+                                if (failed.length > 0) {
+                                    mainprogressbar.trigger('progress.fail', failed);
+                                }
+                                endDownload();
+                            }
 
                         });
 
                     });
-
-
                     
                     
 
@@ -323,17 +314,13 @@
 
 
 
-                
-                
-
-
             } else {
-                for (let i = 0; i < selection.length; i++) {
 
-                    let chapter = selection[i];
+                let lst = [];
 
+                selection.forEach(chapter => {
 
-                    queue.addPromise(() => {
+                    lst.push(queue.addPromise(() => {
 
                         let progress = new ProgressBar(root, chapter.label + '.pdf', false);
 
@@ -341,7 +328,7 @@
                         root.insertBefore(progress.elements.container, mainprogressbar.elements.container.nextElementSibling);
 
 
-                        progress.on('progress.complete', e => {
+                        progress.one('progress.complete', e => {
                             setTimeout(() => {
                                 e.detail.remove();
                             }, 1000);
@@ -360,10 +347,23 @@
                         }).finally(() => {
                             current++;
                         });
-                    });
+                    }));
+
+                });
 
 
-                }
+                Promise.allSettled(lst).then(() => {
+
+                    if (success.length + failed.length === tot) {
+                        if (failed.length > 0) {
+                            mainprogressbar.trigger('progress.fail', failed);
+                        }
+                        endDownload();
+                    }
+
+
+                });
+
             }
 
 
