@@ -183,7 +183,7 @@
 
 
 
-    function downloadChapter(selection, ui, qlength = 5){
+    function downloadChapter(selection, ui, qlength = 5, chaptersPerZip = 30){
         return new Promise((resolve, reject) => {
 
             let
@@ -193,7 +193,7 @@
                     current = 0,
                     success = [],
                     failed = [],
-                    zip, folder;
+                    numParts;
 
 
             mainprogressbar.label = 'Download Queue';
@@ -228,22 +228,10 @@
                         mainprogressbar.trigger('progress.fail', failed);
 
                     }
-
-                    if (zip) {
-
-
-                        mainprogressbar.label = 'Creating: ' + series.title.trim() + '.zip';
-
-                        zip.generateAsync({type: "blob"}).then(function(content){
-                            downloadFile(content, series.title.trim(), "zip");
-                            mainprogressbar.current++;
-                            endDownload();
-                        });
-
-
-                    } else {
-                        endDownload();
-                    }
+                    endDownload();
+                    
+                    
+                    
 
 
 
@@ -255,55 +243,132 @@
 
             if (selection.zip) {
 
-                zip = new JSZip();
-                folder = zip.folder(series.title.trim());
-                mainprogressbar.total = tot + 1;
-            }
+
+                parts = parseInt(Math.ceil(tot / chaptersPerZip));
 
 
-            for (let i = 0; i < selection.length; i++) {
+                mainprogressbar.total = tot + numParts;
 
-                let chapter = selection[i];
-
-
-                queue.addPromise(() => {
-
-                    let progress = new ProgressBar(root, chapter.label + '.pdf', false);
-
-
-                    root.insertBefore(progress.elements.container, mainprogressbar.elements.container.nextElementSibling);
+                for (let i = 0; i < numParts; i++) {
+                    
+                    
+                    let num = i + 1, filename = series.title.trim();
+                    if (numParts > 1) {
+                        filename += '.part' + num;
+                    }
 
 
-                    progress.on('progress.complete', e => {
-                        setTimeout(() => {
-                            e.detail.remove();
-                        }, 1000);
+                    let zip = new JSZip(), folder = zip.folder(series.title.trim());
+
+
+
+
+
+                    selection.slice(i * chaptersPerZip, (i * chaptersPerZip) + chaptersPerZip).forEach(chapter => {
+                        //folder.file(chapter.label + '.pdf', pdf, {base64: true});
+
+                        console.debug(chapter);
+
+                        let lst = [];
+
+                        lst.push(queue.addPromise(() => {
+
+                            let progress = new ProgressBar(root, chapter.label + '.pdf', false);
+
+
+                            root.insertBefore(progress.elements.container, mainprogressbar.elements.container.nextElementSibling);
+
+
+                            progress.on('progress.complete', e => {
+                                setTimeout(() => {
+                                    e.detail.remove();
+                                }, 1000);
+
+                            });
+
+                            return chapter.getPDF(progress).then(pdf => {
+                                folder.file(chapter.label + '.pdf', pdf, {base64: true});
+                                mainprogressbar.current++;
+                                success.push(chapter);
+
+                            }).catch(err => {
+                                console.error(err);
+                                progress.fail();
+                                failed.push(chapter);
+                            }).finally(() => {
+                                current++;
+                            });
+                        }));
+
+                        Promise.all(lst).finally(() => {
+
+
+                            mainprogressbar.label = 'Creating: ' + filename + '.zip';
+
+                            zip.generateAsync({type: "blob"}).then(function(content){
+                                downloadFile(content, filename, "zip");
+                                mainprogressbar.current++;
+                            });
+
+                        });
 
                     });
 
-                    return chapter.getPDF(progress).then(pdf => {
+
+                    
+                    
 
 
-                        if (!zip) {
+                }
+
+
+
+                
+                
+
+
+            } else {
+                for (let i = 0; i < selection.length; i++) {
+
+                    let chapter = selection[i];
+
+
+                    queue.addPromise(() => {
+
+                        let progress = new ProgressBar(root, chapter.label + '.pdf', false);
+
+
+                        root.insertBefore(progress.elements.container, mainprogressbar.elements.container.nextElementSibling);
+
+
+                        progress.on('progress.complete', e => {
+                            setTimeout(() => {
+                                e.detail.remove();
+                            }, 1000);
+
+                        });
+
+                        return chapter.getPDF(progress).then(pdf => {
                             downloadFile(pdf, chapter.label, 'pdf');
-                        } else {
-                            folder.file(chapter.label + '.pdf', pdf, {base64: true});
-                        }
+                            mainprogressbar.current++;
+                            success.push(chapter);
 
-                        current++;
-                        mainprogressbar.current = current;
-
-                        success.push(chapter);
-
-                    }).catch(err => {
-                        console.error(err);
-                        progress.fail();
-                        failed.push(chapter);
+                        }).catch(err => {
+                            console.error(err);
+                            progress.fail();
+                            failed.push(chapter);
+                        }).finally(() => {
+                            current++;
+                        });
                     });
-                });
 
 
+                }
             }
+
+
+
+
 
 
 
