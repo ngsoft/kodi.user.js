@@ -39,7 +39,7 @@
         setTimeout(() => {
             URL.revokeObjectURL(href);
         }, 15000);
-        
+
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -220,105 +220,39 @@
 
             const queue = new ConcurrentPromiseQueue({maxNumberOfConcurrentPromises: qlength});
 
+
+
+
+            let numParts = parseInt(Math.ceil(tot / chaptersPerZip));
+
+
+            mainprogressbar.total = tot;
+
+
             if (selection.zip) {
+                mainprogressbar.total += numParts;
+            }
+
+            for (let i = 0; i < numParts; i++) {
 
 
-                let numParts = parseInt(Math.ceil(tot / chaptersPerZip));
+                let num = i + 1, filename = series.title.trim(), zip, folder, lst = [];
 
 
-                mainprogressbar.total = tot + numParts;
-
-                for (let i = 0; i < numParts; i++) {
-                    
-                    
-                    let num = i + 1, filename = series.title.trim();
-                    
-                    
-                    if (numParts > 1) {
-                        filename += '.part' + num;
-                    }
+                if (numParts > 1) {
+                    filename += '.part' + num;
+                }
 
 
-                    let zip = new JSZip(), folder = zip.folder(series.title.trim()), lst = [];
-
-
-
-
-
-                    selection.slice(i * chaptersPerZip, (i * chaptersPerZip) + chaptersPerZip).forEach(chapter => {
-
-
-                        lst.push(queue.addPromise(() => {
-
-                            let progress = new ProgressBar(root, chapter.label + '.pdf', false);
-
-
-                            root.insertBefore(progress.elements.container, mainprogressbar.elements.container.nextElementSibling);
-
-
-                            progress.one('progress.complete', e => {
-                                setTimeout(() => {
-                                    e.detail.remove();
-                                }, 1000);
-
-                            });
-
-                            return chapter.getPDF(progress).then(pdf => {
-                                folder.file(chapter.label + '.pdf', pdf, {base64: true});
-                                mainprogressbar.current++;
-                                success.push(chapter);
-
-                            }).catch(err => {
-                                console.error(err);
-                                progress.fail();
-                                failed.push(chapter);
-                            }).finally(() => {
-                                current++;
-                            });
-                        }));
-
-
-
-                    });
-
-                    Promise.allSettled(lst).then(() => {
-
-
-                        mainprogressbar.label = 'Creating: ' + filename + '.zip';
-
-                        zip.generateAsync({type: "blob"}).then(function(content){
-                            downloadFile(content, filename, "zip");
-                            mainprogressbar.label = 'Download Queue';
-                            mainprogressbar.current++;
-                        }).catch (error=>{
-                            console.error(error);
-                            mainprogressbar.label = 'Download Queue';
-
-                        }).finally(() => {
-
-                            if (success.length + failed.length === tot) {
-                                if (failed.length > 0) {
-                                    mainprogressbar.trigger('progress.fail', failed);
-                                }
-                                endDownload();
-                            }
-
-                        });
-
-                    });
-                    
-                    
-
-
+                if (selection.zip) {
+                    zip = new JSZip();
+                    folder = zip.folder(series.title.trim());
                 }
 
 
 
-            } else {
+                selection.slice(i * chaptersPerZip, (i * chaptersPerZip) + chaptersPerZip).forEach(chapter => {
 
-                let lst = [];
-
-                selection.forEach(chapter => {
 
                     lst.push(queue.addPromise(() => {
 
@@ -336,7 +270,13 @@
                         });
 
                         return chapter.getPDF(progress).then(pdf => {
-                            downloadFile(pdf, chapter.label, 'pdf');
+                            if (folder) {
+                                folder.file(chapter.label + '.pdf', pdf, {base64: true});
+                            } else {
+                                downloadFile(pdf, chapter.label, 'pdf');
+                            }
+
+
                             mainprogressbar.current++;
                             success.push(chapter);
 
@@ -349,12 +289,33 @@
                         });
                     }));
 
-                });
 
+
+                });
 
                 Promise.allSettled(lst).then(() => {
 
-                    if (success.length + failed.length === tot) {
+                    if (zip) {
+                        mainprogressbar.label = 'Creating: ' + filename + '.zip';
+
+                        zip.generateAsync({type: "blob"}).then(function(content){
+                            downloadFile(content, filename, "zip");
+                            mainprogressbar.current++;
+                        }).catch(error => {
+                            console.error(error);
+                        }).finally(() => {
+
+                            mainprogressbar.label = 'Download Queue';
+
+                            if (current === tot) {
+                                if (failed.length > 0) {
+                                    mainprogressbar.trigger('progress.fail', failed);
+                                }
+                                endDownload();
+                            }
+
+                        });
+                    } else if (current === tot) {
                         if (failed.length > 0) {
                             mainprogressbar.trigger('progress.fail', failed);
                         }
@@ -362,15 +323,10 @@
                     }
 
 
+
                 });
 
             }
-
-
-
-
-
-
 
         });
     }
@@ -378,7 +334,7 @@
 
 
     menu.clear();
-    
+
     if (series) {
 
         if (currentChapter !== null) {
@@ -392,8 +348,8 @@
 
             }, 'chapdl');
         }
-        
-        
+
+
         Overlay.getInstance(series).hide().then(ui => {
             ui.on('chapter.selected', e => {
 
@@ -411,8 +367,8 @@
 
 
         menu.addItem('Download current manga', () => {
-            
-            if(! downloading){
+
+            if (!downloading) {
                 Overlay.getSelection(series);
             }
 
