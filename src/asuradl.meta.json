@@ -30,6 +30,9 @@
         "/^https?:\\/\\/beta\\.asurascans\\.\\w+\\/(comics|read)\\//",
         "/^https?:\\/\\/www\\.asurascans\\.\\w+\\/(manga|.*-chapter-.*)\\//"
     ],
+    "match": [
+        "https://theskeletonsoldier.com/*"
+    ],
     "connect": [
         "*"
     ],
