@@ -11,7 +11,7 @@
     const {html2doc, createElement, uniqid} = utils;
     const {ConcurrentPromiseQueue} = root.cpromise;
 
-    const {fetch} = root['tamper-fetch'];
+    const fetch = root['tamper-fetch'].fetch_timeout;
 
 
     let isBeta = /^beta/.test(location.host), currentChapter = null, downloading = false, series;
@@ -227,9 +227,6 @@
 
         }
 
-
-
-        console.debug(chapterList);
 
 
 
