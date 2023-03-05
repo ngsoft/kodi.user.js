@@ -330,7 +330,10 @@
 
                         if (mainsignal.aborted)
                         {
-                            controller.abort();
+
+                            return Promise.reject(new Error('download aborted'));
+
+
                         } else
                         {
                             mainsignal.addEventListener('abort', () => controller.abort());
@@ -383,6 +386,12 @@
 
                     if (zip)
                     {
+                        if (mainprogressbar.aborted)
+                        {
+                            endDownload();
+                            throw new Error('zip aborted');
+                        }
+
                         mainprogressbar.label = 'Creating: ' + filename + '.zip';
 
                         zip.generateAsync({type: "blob"}).then(function(content){
