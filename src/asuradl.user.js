@@ -388,8 +388,8 @@
                     {
                         if (mainprogressbar.aborted || Object.keys(zip.files).length < 2)
                         {
-                            endDownload();
-                            throw new Error('zip aborted');
+                            mainprogressbar.trigger('progress.fail', failed);
+                            return endDownload();
                         }
 
                         mainprogressbar.label = 'Creating: ' + filename + '.zip';
