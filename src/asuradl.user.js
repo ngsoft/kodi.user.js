@@ -386,13 +386,15 @@
 
                     if (zip)
                     {
-                        if (mainprogressbar.aborted)
+                        if (mainprogressbar.aborted || Object.keys(zip.files).length < 2)
                         {
                             endDownload();
                             throw new Error('zip aborted');
                         }
 
                         mainprogressbar.label = 'Creating: ' + filename + '.zip';
+
+
 
                         zip.generateAsync({type: "blob"}).then(function(content){
                             downloadFile(content, filename, "zip");
