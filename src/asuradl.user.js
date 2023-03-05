@@ -235,7 +235,7 @@
 
 
 
-    function downloadChapter(selection, ui, qlength = 5, chaptersPerZip = 30){
+    function downloadChapter(selection, ui, qlength = 5, chaptersPerZip = 20){
 
         if (/soldier/.test(location.host))
         {
@@ -281,7 +281,8 @@
 
             const queue = new ConcurrentPromiseQueue({maxNumberOfConcurrentPromises: qlength});
 
-
+            const controller = new AbortController(), signal = AbortController.signal;
+            mainprogressbar.on('progress.aborted', () => controller.abort());
 
 
             let numParts = parseInt(Math.ceil(tot / chaptersPerZip));
@@ -334,7 +335,7 @@
 
                         });
 
-                        return chapter.getPDF(progress).then(pdf => {
+                        return chapter.getPDF(progress, signal).then(pdf => {
                             if (folder)
                             {
                                 folder.file(chapter.label + '.pdf', pdf, {base64: true});
