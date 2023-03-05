@@ -11,7 +11,7 @@
     pointer-events: none;
     cursor:pointer !important;
 }
-[data-tab][data-selected].button{
+[data-tab][data-selected].button.purple{
     background: var(--header-hover-back-color);
 }
 
