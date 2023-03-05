@@ -281,8 +281,8 @@
 
             const queue = new ConcurrentPromiseQueue({maxNumberOfConcurrentPromises: qlength});
 
-            const controller = new AbortController(), signal = AbortController.signal;
-            mainprogressbar.on('progress.aborted', () => controller.abort());
+            const maincontroller = new AbortController(), mainsignal = maincontroller.signal;
+            mainprogressbar.one('progress.aborted', () => maincontroller.abort());
 
 
             let numParts = parseInt(Math.ceil(tot / chaptersPerZip));
@@ -322,7 +322,23 @@
 
                     lst.push(queue.addPromise(() => {
 
-                        let progress = new ProgressBar(root, chapter.label + '.pdf', false);
+                        const
+                                progress = new ProgressBar(root, chapter.label + '.pdf', false),
+                                controller = new AbortController();
+
+
+
+                        if (mainsignal.aborted)
+                        {
+                            controller.abort();
+                        } else
+                        {
+                            mainsignal.addEventListener('abort', () => controller.abort());
+
+                        }
+
+
+                        const signal = controller.signal;
 
 
                         root.insertBefore(progress.elements.container, mainprogressbar.elements.container.nextElementSibling);
@@ -333,6 +349,8 @@
                                 e.detail.remove();
                             }, 1000);
 
+                        }).one('progress.aborted', () => {
+                            controller.abort();
                         });
 
                         return chapter.getPDF(progress, signal).then(pdf => {
