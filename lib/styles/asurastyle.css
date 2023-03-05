@@ -15,6 +15,11 @@
     background: var(--header-hover-back-color);
 }
 
+.progress-bar .percent, .progress-bar .cancel-btn{
+    margin-left: 1em;
+}
+
+
 html, *{
     font-family: 'PT Sans', sans-serif;
 }
