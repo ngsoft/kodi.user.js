@@ -15,8 +15,9 @@
     background: var(--header-hover-back-color);
 }
 
-.progress-bar .percent, .progress-bar .cancel-btn{
-    margin-left: 1em;
+.progress-row{
+    display: flex;
+    align-items: center;
 }
 
 

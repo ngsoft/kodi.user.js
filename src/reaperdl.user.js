@@ -311,6 +311,7 @@
 
     function main(){
 
+
         isChapter = /\/chapters\//.test(location.pathname);
         // mainPage = (document.querySelector('a .fa-list')?.parentElement.href) ?? location.href.split('?')[0];
 
@@ -319,6 +320,8 @@
 
 
         menu.clear();
+
+        Overlay.instances = {};
 
 
         if (isChapter)
@@ -369,7 +372,12 @@
     }
 
 
-    addEventListener('page.pushstate', main);
+    addEventListener('page.pushstate', e => {
+
+        main();
+        // setTimeout(main, 1500);
+
+    });
 
     main();
 
