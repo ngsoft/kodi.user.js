@@ -1,0 +1,40 @@
+{
+    "name": "AquaManga Downloader",
+    "description": "Download on AquaManga",
+    "author": "Aymeric Anger",
+    "namespace": "https://github.com/ngsoft/kodi.user.js",
+    "noframes": true,
+    "grant": [
+        "GM_registerMenuCommand",
+        "GM_unregisterMenuCommand",
+        "GM_getResourceURL",
+        "GM_xmlhttpRequest"
+    ],
+    "resource": {
+        "overlay": "/lib/styles/gmoverlay.css",
+        "asurastyle": "/lib/styles/asurastyle.css",
+        "asuraui": "/lib/templates/asuraui.html",
+        "minidark": "https://cdnjs.cloudflare.com/ajax/libs/mini.css/3.0.1/mini-dark.min.css",
+        "minilight": "https://cdnjs.cloudflare.com/ajax/libs/mini.css/3.0.1/mini-default.min.css",
+        "btstutils": "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap-utilities.min.css"
+    },
+    "require": [
+        "https://cdn.jsdelivr.net/npm/pdf-lib@latest/dist/pdf-lib.min.js",
+        "https://cdn.jsdelivr.net/npm/jszip@3.1.5/dist/jszip.min.js"
+    ],
+    "module": [
+        "asuraui",
+        "cpromise"
+    ],
+    "include": [
+        "/^https?:\\/\\/aquamanga\\.\\w+\\/read\\/\\w+/"
+    ],
+    "match": [],
+    "connect": [
+        "*"
+    ],
+    "icon": {
+        "url": "data:image/png;base64,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"
+
+    }
+}
