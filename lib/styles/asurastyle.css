@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
 :root {
-    --button-hover-back-color: linear-gradient(180deg,#7334ae,#3e0251);
+    --button-hover-back-color-purple: linear-gradient(180deg,#7334ae,#3e0251) !important;
 }
 [hidden], template {
     display: none !important;
@@ -11,9 +11,7 @@
     pointer-events: none;
     cursor:pointer !important;
 }
-[data-tab][data-selected].button.purple{
-    background: var(--header-hover-back-color);
-}
+
 
 .progress-row{
     display: flex;
