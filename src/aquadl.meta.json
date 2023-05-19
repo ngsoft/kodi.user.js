@@ -27,9 +27,11 @@
         "cpromise"
     ],
     "include": [
-        "/^https?:\\/\\/aquamanga\\.\\w+\\/read\\/\\w+/"
+
     ],
-    "match": [],
+    "match": [
+        "*://aquamanga.com/read/*"
+    ],
     "connect": [
         "*"
     ],

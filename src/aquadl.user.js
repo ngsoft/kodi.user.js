@@ -18,9 +18,11 @@
 
 
     function getImageList(doc){
-        let images = [];
-        doc.querySelectorAll('.read-container .wp-manga-chapter-img')
-                .forEach(img => images.push(img.src));
+        let images = [  ...doc.querySelectorAll('.read-container .wp-manga-chapter-img')     ]
+                .map(img => img.dataset.src ?? img.src).map(src => src.trim());
+
+        console.debug(images);
+
         return images.filter(src => (! src.endsWith('.gif') || dlgif));
     }
 
@@ -45,12 +47,6 @@
         document.body.removeChild(a);
 
     }
-
-
-
-
-
-
 
 
     history.pushState = (function(){
@@ -81,7 +77,7 @@
 
 
 
-    function downloadChapter(selection, ui, qlength = 2, chaptersPerZip = 20){
+    function downloadChapter(selection, ui, qlength = 4, chaptersPerZip = 20){
 
 
         return new Promise((resolve, reject) => {
@@ -277,29 +273,45 @@
 
 
 
-    function getSeries(){
+    function aquaManga(){
 
 
         if (! series)
         {
             let title = document.querySelector('.container h1, center p a[href*="/read/"]').innerText.trim(), chapters = [];
-            console.debug(title);
+
             if (! isChapter)
             {
                 document.querySelectorAll('.page-content-listing .wp-manga-chapter a').forEach(el => {
                     let label = el.innerText, link = el.href;
-                    chapters.push(new Chapter(link, label, getImageList));
+                    if(label.length>0){
+                        chapters.push(new Chapter(link, label, getImageList));
+                    }
+
                 });
 
             } else
             {
-                chapters.push(currentChapter = new Chapter(location.href, document.querySelector('.breadcrumb .active').innerText, getImageList))
+
+                document.querySelectorAll('select.single-chapter-select option').forEach(opt => {
+
+                    let label = opt.innerText.trim(), link = opt.dataset.redirect, chap = new Chapter(link, label, getImageList);
+
+                    chapters.push(chap);
+
+                    if (opt.selected)
+                    {
+                        currentChapter = chap;
+                    }
+
+                });
+
             }
 
 
             series = new Manga(title, chapters.reverse());
 
-            console.debug(series, chapters, currentChapter, isChapter);
+            //console.debug(series, chapters, currentChapter, isChapter);
         }
 
 
@@ -309,6 +321,69 @@
 
 
 
+    function manhuaus(){
+
+
+        if (! series)
+        {
+            let title = document.querySelector('.container h1, .breadcrumb a[href*="/manga/"]').innerText.trim(), chapters = [];
+
+            if (! isChapter)
+            {
+                document.querySelectorAll('.page-content-listing .wp-manga-chapter a').forEach(el => {
+                    let label = el.innerText, link = el.href;
+                    if (label.length > 0)
+                    {
+                        chapters.push(new Chapter(link, label, getImageList));
+                    }
+
+                });
+
+            } else
+            {
+
+                document.querySelectorAll('select.single-chapter-select option').forEach(opt => {
+
+                    let label = opt.innerText.trim(), link = opt.dataset.redirect, chap = new Chapter(link, label, getImageList);
+
+                    chapters.push(chap);
+
+                    if (opt.selected)
+                    {
+                        currentChapter = chap;
+                    }
+
+                });
+
+            }
+
+
+            series = new Manga(title, chapters.reverse());
+
+        }
+
+
+
+        return series;
+    }
+
+
+
+    function getSeries(){
+
+        if (/aquamanga/.test(location.host))
+        {
+            return  aquaManga();
+        }
+
+        else if (/manhuaus/.test(location.host))
+        {
+            return manhuaus();
+        }
+
+    }
+
+
 
 
     function main(){
@@ -316,12 +391,9 @@
 
         isChapter = /\/chapter/.test(location.pathname);
 
-        currentChapter = series = null;
-
-
+        currentChapter = series =  null;
 
         menu.clear();
-
         Overlay.instances = {};
 
 
@@ -374,6 +446,8 @@
 
 
     addEventListener('page.pushstate', e => {
+
+        console.debug(e);
 
         main();
         // setTimeout(main, 1500);
