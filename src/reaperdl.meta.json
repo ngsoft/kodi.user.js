@@ -27,9 +27,11 @@
         "cpromise"
     ],
     "include": [
-        "/^https?:\\/\\/reaperscans\\.\\w+\\/comics\\/\\d+/"
+
     ],
-    "match": [],
+    "match": [
+        "*://reaperscans.com/comics/*"
+    ],
     "connect": [
         "*"
     ],

@@ -14,14 +14,11 @@
     const fetch = root['tamper-fetch'].fetch_timeout;
 
 
-    let isBeta = /^beta/.test(location.host), currentChapter = null, downloading = false, dlgif = false, series, isChapter = false;
+    let  currentChapter = null, downloading = false, dlgif = false, series, isChapter = false;
 
 
     function getImageList(doc){
-        let images = [];
-        doc.querySelectorAll('img.max-w-full')
-                .forEach(img => images.push(img.src));
-        return images.filter(src => (! src.endsWith('.gif') || dlgif));
+        return [...doc.querySelectorAll('img.max-w-full')].map(img => img.src).filter(src => (! src.endsWith('.gif') || dlgif));
     }
 
 
@@ -90,8 +87,7 @@
                     root = mainprogressbar.elements.root,
                     current = 0,
                     success = [],
-                    failed = [],
-                    series = getSeries();
+                    failed = [];
 
 
             mainprogressbar.label = 'Download Queue';
@@ -190,7 +186,7 @@
                         progress.one('progress.complete', e => {
                             setTimeout(() => {
                                 e.detail.remove();
-                            }, 1000);
+                            }, 4000);
 
                         }).one('progress.aborted', () => {
                             controller.abort();
@@ -276,33 +272,52 @@
 
 
     function getSeries(){
+        return new Promise(resolve => {
 
 
-        if (! series)
-        {
             let title = document.querySelector('.container h1, main .text-2xl').innerText.trim(), chapters = [];
-            console.debug(title);
+
             if (! isChapter)
             {
                 document.querySelectorAll('ul a[href*="/chapters/"]').forEach(el => {
                     let label = el.querySelector('p.truncate').innerText, link = el.href;
                     chapters.push(new Chapter(link, label, getImageList));
                 });
+                resolve(new Manga(title, chapters.reverse()));
+
 
             } else
             {
-                chapters.push(currentChapter = new Chapter(location.href, document.querySelector('main nav .hidden').innerText, getImageList))
+
+                let
+                        link = document.querySelector('main nav a[href*="/comics/"]:not([href*="/chapters/"])').href,
+                        label = document.querySelector('main nav .hidden').innerText;
+                currentChapter = new Chapter(location.href, label, getImageList);
+
+                fetch(link, {timeout: 20}).then(resp => resp.text()).then(html => html2doc(html)).then(doc => {
+                    
+                    chapters = [...doc.querySelectorAll('ul a[href*="/chapters/"]')].map(el => {
+
+                        let name = el.querySelector('p.truncate').innerText, href = el.href;
+
+                        if (name === label)
+                        {
+                            return currentChapter;
+                        }
+
+                        return new Chapter(href, name, getImageList);
+
+                    });
+
+
+                    resolve(new Manga(title, chapters.reverse()));
+
+
+                });
+
+
             }
-
-
-            series = new Manga(title, chapters.reverse());
-
-            console.debug(series, chapters, currentChapter, isChapter);
-        }
-
-
-
-        return series;
+        });
     }
 
 
@@ -322,53 +337,60 @@
         menu.clear();
 
         Overlay.instances = {};
+        
+        
+        getSeries().then(data=>{
+            series = data;
 
-
-        if (isChapter)
-        {
-            menu.addItem('Download current chapter', () => {
-                if (! downloading)
-                {
-                    Overlay.downloadSelection(getSeries(), currentChapter).then(ui => {
-                        downloadChapter([currentChapter], ui);
-                    });
-                    menu.removeItem('chapdl');
-                }
-
-            }, 'chapdl');
-
-
-
-        }
-
-
-        Overlay.getInstance(getSeries()).hide().then(ui => {
-            ui.on('chapter.selected', e => {
-
-                if (! downloading)
-                {
-                    let sel = e.detail;
-                    Overlay.downloadSelection(getSeries(), sel).then(ui => {
-                        downloadChapter(sel, ui);
-                    });
-                }
-
-            });
-        });
-
-
-
-
-        menu.addItem('Download current manga', () => {
-
-            if (! downloading)
+            console.debug(series);
+            if (isChapter)
             {
-                Overlay.getSelection(getSeries());
+                menu.addItem('Download current chapter', () => {
+                    if (! downloading)
+                    {
+                        Overlay.downloadSelection(series, currentChapter).then(ui => {
+                            downloadChapter([currentChapter], ui);
+                        });
+                        menu.removeItem('chapdl');
+                    }
+
+                }, 'chapdl');
+
+
+
             }
 
 
-        }, 'mangadl');
+            Overlay.getInstance(series).hide().then(ui => {
+                ui.on('chapter.selected', e => {
 
+                    if (! downloading)
+                    {
+                        let sel = e.detail;
+                        Overlay.downloadSelection(series, sel).then(ui => {
+                            downloadChapter(sel, ui);
+                        });
+                    }
+
+                });
+            });
+
+
+
+
+            menu.addItem('Download current manga', () => {
+
+                if (! downloading)
+                {
+                    Overlay.getSelection(series);
+                }
+
+
+            }, 'mangadl');
+            
+            
+            
+        });
     }
 
 
