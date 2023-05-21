@@ -30,7 +30,9 @@
 
     ],
     "match": [
-        "*://reaperscans.com/comics/*"
+        "*://reaperscans.com/comics/*",
+        "*://void-scans.com/manga/*",
+        "*://void-scans.com/*-chapter-*"
     ],
     "connect": [
         "*"
